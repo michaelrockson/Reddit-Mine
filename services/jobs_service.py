@@ -2,6 +2,7 @@ from database import get_session
 from pipelines.core_pipeline import CorePipeline
 from pipelines.egress_pipeline import EgressPipeline
 from pipelines.ingress_pipeline import IngressPipeline
+from pipelines.scout_pipeline import ScoutBotPipeline
 from pipelines.sentiment_pipeline import SentimentPipeline
 from repositories.post_repository import PostRepository
 from settings import settings
@@ -45,12 +46,24 @@ class JobService:
         return wrapper
 
 
+    def run_scout_bot(self):
+        """
+        Runs the scout bot pipeline to identify and validate potential pain points.
+        """
+        logger.info("Starting scout bot job")
+        scout = ScoutBotPipeline()
+        self.safe_run(scout.run)()
+        logger.info("Scout bot job finished")
+
+
     def run_all_pipelines(self):
         """
         Runs the pipelines synchronously in the correct order:
-        Ingress -> Sentiment -> Core -> Egress
+        Scout -> Ingress -> Sentiment -> Core -> Egress
         """
         logger.info("Starting full pipeline sequence")
+
+        self.run_scout_bot()
 
         ingress = IngressPipeline()
         sentiment = SentimentPipeline()

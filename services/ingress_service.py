@@ -1,65 +1,96 @@
 from typing import Dict, List, Any
 
 from clients.reddit_client import get_reddit_client
+from database import get_session
+from repositories.validated_post_repository import ValidatedPostRepository
 from settings import settings
-from utils.helpers import get_posts_from_subreddit, \
-    get_comments_from_submission
+from utils.helpers import get_comments_from_submission, get_post_by_id
 from utils.logger import logger
 
 
 class IngressService:
     """
-    Service for handling Reddit data ingestion, including fetching posts and comments
-    from specified subreddits using the Reddit API client.
+    Service for handling Reddit data ingestion, focused on fetching posts
+    that have been validated by the scout bot and retrieving their comments.
     """
 
 
     def __init__(self):
         self.reddit = get_reddit_client()
-        self.subreddits = settings.DEFAULT_SUBREDDITS
-        self.post_limit = settings.DEFAULT_POST_LIMIT
+        self.validated_repo = ValidatedPostRepository()
+        self.session = get_session()
         self.comment_limit = settings.DEFAULT_COMMENT_LIMIT
-        self.min_comments = settings.MIN_COMMENTS
-        self.min_score = settings.MIN_SCORE
-        self.min_upvote_ratio = settings.MIN_UPVOTE_RATIO
         self.posts = []
         self.submission_ids = []
         self.comments = []
 
 
-    def fetch_reddit_posts(self) -> List[Dict[str, Any]]:
+    def fetch_validated_posts(self) -> List[Dict[str, Any]]:
         """
-        Fetch Reddit posts from the configured subreddits that meet minimum criteria.
+        Reads unprocessed submission IDs from the `validated_posts` table,
+        fetches each post's full data directly from the Reddit API using its
+        submission ID.
+
+        Then marks those records as processed so they are not
+        picked up again on the next run.
+
         Returns:
-            List[Dict[str, Any]]: List of post data dictionaries.
+            List[Dict[str, Any]]: List of post data dicts for validated submissions.
         """
         if not self.reddit:
             logger.warning("Reddit client not found. Reconnecting...")
             self.reddit = get_reddit_client()
 
-        posts: List[Dict[str, Any]] = []
+        try:
+            validated_repo = ValidatedPostRepository()
+            unprocessed = validated_repo.get_unprocessed()
 
-        for subreddit_name in self.subreddits:
+            if not unprocessed:
+                logger.info(
+                    "fetch_validated_posts: no unprocessed validated posts found.")
+                return []
+
+            submission_ids = [record.submission_id for record in unprocessed]
             logger.info(
-                f"Fetching posts from r/{subreddit_name} (limit={self.post_limit})...")
-            try:
-                subreddit_posts = get_posts_from_subreddit(
-                    self.reddit,
-                    subreddit_name,
-                    self.post_limit,
-                    self.min_upvote_ratio,
-                    self.min_score,
-                    self.min_comments
-                )
-                posts.extend(subreddit_posts)
-            except Exception as e:
-                logger.error(
-                    f"Error fetching posts from r/{subreddit_name}: {e}",
-                    exc_info = True)
+                f"fetch_validated_posts: {len(submission_ids)} validated IDs to scrape: {submission_ids}"
+            )
 
-        self.posts = posts
-        logger.info(f"Collected {len(posts)} posts")
-        return posts
+            posts: List[Dict[str, Any]] = []
+            processed_ids: List[str] = []
+
+            for submission_id in submission_ids:
+                try:
+                    post_data = get_post_by_id(self.reddit, submission_id)
+                    posts.append(post_data)
+                    processed_ids.append(submission_id)
+                    logger.info(
+                        f"Scraped validated post '{submission_id}': {post_data['title'][:60]!r}"
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"Failed to fetch submission '{submission_id}': {e}",
+                        exc_info = True
+                    )
+
+            if processed_ids:
+                validated_repo.mark_as_processed(processed_ids)
+                self.session.commit()
+                logger.info(
+                    f"fetch_validated_posts: marked {len(processed_ids)} record(s) as processed."
+                )
+
+            self.posts = posts
+            logger.info(
+                f"fetch_validated_posts: collected {len(posts)} post(s).")
+            return posts
+
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"fetch_validated_posts failed: {e}", exc_info = True)
+            return []
+
+        finally:
+            self.session.close()
 
 
     def fetch_post_ids(self) -> List[str]:
@@ -70,8 +101,8 @@ class IngressService:
         """
         if not self.posts:
             logger.warning(
-                "No posts available. Running fetch_reddit_posts() first...")
-            self.fetch_reddit_posts()
+                "No posts available. Running fetch_validated_posts() first...")
+            self.fetch_validated_posts()
 
         submission_ids: List[str] = []
 

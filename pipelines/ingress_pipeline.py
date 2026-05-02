@@ -1,4 +1,3 @@
-from database.init_db import init_db
 from services.reddit_service import RedditService
 from utils.logger import logger
 
@@ -15,11 +14,10 @@ class IngressPipeline:
 
     def run(self):
         """
-        Executes the ingress pipeline: database initialization, data scraping and storage.
+        Executes the ingress pipeline: data scraping and storage.
         """
         try:
             logger.info("Ingress pipeline started")
-            init_db()
 
             logger.info("Scraping data from Reddit...")
             reddit_data = self.reddit_service.run_reddit_scraper()

@@ -158,6 +158,30 @@ def get_posts_from_subreddit(
     return posts
 
 
+def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
+    """
+    Fetch and format a single Reddit submission by its ID.
+
+    Args:
+        reddit: The Reddit client instance.
+        submission_id: The Reddit submission ID to fetch.
+
+    Returns:
+        Dict[str, Any]: Post data dictionary.
+    """
+    submission = reddit.submission(id = submission_id)
+    return {
+        "subreddit": submission.subreddit.display_name,
+        "submission_id": submission.id,
+        "title": submission.title,
+        "body": submission.selftext,
+        "upvote_ratio": submission.upvote_ratio,
+        "score": submission.score,
+        "number_of_comments": submission.num_comments,
+        "post_url": submission.url
+    }
+
+
 def evaluate_engagements(search_result, cumulated_search_results, subreddit,
                          search_query, min_upvote_ratio, min_score, min_comments):
     if (
@@ -169,6 +193,7 @@ def evaluate_engagements(search_result, cumulated_search_results, subreddit,
         cumulated_search_results.append(
             {"subreddit": subreddit,
              "search_query": search_query,
+             "post_id": search_result.id,
              "post_title": search_result.title,
              "post_content": search_result.selftext,
              "post_score": search_result.score})
