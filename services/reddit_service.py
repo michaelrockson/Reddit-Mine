@@ -20,13 +20,14 @@ class RedditService:
 
     def run_reddit_scraper(self) -> Dict[str, Any]:
         """
-        Run the Reddit scraping pipeline: fetch posts, extract submission IDs, and fetch comments.
+        Run the Reddit scraping pipeline: fetch agent-validated posts,
+        extract submission IDs, and fetch comments.
         Returns:
             Dict[str, Any]: Dictionary containing posts, submission IDs, and comments.
         """
         logger.info("Starting Reddit scraping")
-        logger.info("Fetching posts")
-        posts = self.scraper.fetch_reddit_posts()
+        logger.info("Fetching agent-validated posts from database")
+        posts = self.scraper.fetch_validated_posts()
 
         if not posts:
             logger.warning("No posts were fetched. Exiting pipeline.")

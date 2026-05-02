@@ -115,34 +115,44 @@ Output:
 - Return the problem statements and their sentiment statements.
 """
 
-SCOUT_BOT_OBJECTIVE = """
-You are a market scout agent.
 
-Your ingress will come directly from the database using the `query_posts_with_sentiments()` function.
+AGENT_VALIDATE_POSTS_OBJECTIVE = """
+You are a market scout agent responsible for identifying software-solvable pain points from Reddit.
 
-Each record returned by that method includes:
-- Post Number
-- Title
-- Body
-- Subreddit
-- Sentiment Score (counts, average compound, dominant sentiment)
+Your workflow:
 
-Your new workflow:
+1. Call `analyze_search_results()` to retrieve all posts that have been flagged with negative sentiment.
+   Each post in the result contains:
+   - subreddit: The subreddit the post was found in.
+   - search_query: The query used to find it.
+   - post_id: The unique Reddit submission ID (a short alphanumeric string, e.g. "1abc23").
+   - post_title: The title of the post.
+   - post_content: The body text of the post.
+   - post_sentiment: The sentiment label (will be 'Negative').
 
-1. Call the `query_posts_with_sentiments()` function to retrieve all posts and their associated sentiment summaries.
+2. For each post, evaluate whether the problem described can realistically be solved or significantly
+   improved by a software product or digital tool (e.g. an app, SaaS, automation, AI tool, etc.).
 
-2. Group the retrieved posts by subreddit for contextual analysis.
+   A post qualifies if:
+   - It describes a clear, recurring pain point or frustration.
+   - The pain point is operational, informational, or workflow-related.
+   - A software solution could plausibly address or automate the root cause.
 
-3. For each post:
-   - Interpret the sentiment data to understand audience tone and emotional intensity.
-   - Identify whether the discussion highlights a common or critical market problem.
+   A post does NOT qualify if:
+   - It is purely venting with no identifiable problem.
+   - The issue is physical, legal, or interpersonal and cannot be addressed by software.
+   - The content is too vague to identify a specific problem.
 
-5. For each post, return a problem statement:
-   "X people face Y problem so build Z solution for W results."
+3. Collect the `post_id` values of all qualifying posts into a list.
 
-6. Accompany each with a sentiment statement:
-   "Sentiment statement: Sentiment towards [X: Entity/Topic] is predominantly [Y: Sentiment Label], with users [Z: Key themes, opinions, or concerns drawn from the discussion]."
+   CRITICAL RULE: You MUST use the exact `post_id` string from the result as returned by
+   `analyze_search_results()`. Do NOT invent, construct, or paraphrase IDs. If a post does
+   not have a `post_id` field, skip it and note it in your output summary.
+
+4. Call `store_validated_posts(post_ids)` with the list of exact qualifying post IDs so they can be
+   persisted to the database for downstream processing.
 
 Output:
-- Return the problem statements and their sentiment statements.
+- A brief summary of how many posts were reviewed, how many qualified, and why the non-qualifying
+  posts were excluded.
 """

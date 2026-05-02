@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, \
-    Boolean, JSON
+    Boolean, JSON, DateTime
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -65,3 +67,16 @@ class CuratedItem(Base):
     id = Column(Integer, primary_key = True, autoincrement = True)
     submission_id = Column(String(20), nullable = False, unique = True)
     scheduled_deletion = Column(Boolean, default = False)
+
+
+class ValidatedPost(Base):
+    __tablename__ = "validated_posts"
+
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    submission_id = Column(String(100), nullable = False, unique = True)
+    validated_at = Column(
+        DateTime(timezone = True),
+        default = lambda: datetime.now(timezone.utc),
+        nullable = False
+    )
+    is_processed = Column(Boolean, default = False, nullable = False)

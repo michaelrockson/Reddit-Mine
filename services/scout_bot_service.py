@@ -1,8 +1,12 @@
 from typing import List, Dict
 
+from google.genai import errors
 from nltk.sentiment import SentimentIntensityAnalyzer
 
+from clients.gemini_client import initialize_gemini, provide_agent_tools
 from clients.reddit_client import get_reddit_client
+from database import get_session
+from database.models import ValidatedPost
 from settings import settings
 from utils.helpers import evaluate_engagements
 from utils.logger import logger
@@ -16,20 +20,7 @@ class ScoutBotService:
         by engagement thresholds (score, comments, upvote ratio) and classifies
         them by sentiment using VADER. Only negative posts are retained for
         downstream processing.
-
-        Attributes:
-            subreddits (List[str]): Target subreddits to search.
-            search_queries (List[str]): Queries to run against each subreddit.
-            min_score (int): Minimum post score threshold for engagement filtering.
-            min_comments (int): Minimum comment count threshold.
-            min_upvote_ratio (float): Minimum upvote ratio threshold.
-            reddit: Authenticated PRAW Reddit client instance.
-            sia (SentimentIntensityAnalyzer): VADER sentiment analyzer.
-            search_results (List[List[Dict]]): Raw results from the last subreddit search,
-                grouped by subreddit/query pair.
-            search_result_sentiments (List[List[Dict]]): Filtered results containing
-                only negative posts from the last analysis run.
-        """
+    """
 
 
     def __init__(self):
@@ -39,9 +30,11 @@ class ScoutBotService:
         self.min_comments = settings.MIN_COMMENTS
         self.min_upvote_ratio = settings.MIN_UPVOTE_RATIO
         self.reddit = get_reddit_client()
+        self.session = get_session()
         self.sia = SentimentIntensityAnalyzer()
         self.search_results = []
         self.search_result_sentiments = []
+        self.gemini = initialize_gemini()
 
 
     def search_subreddit(self) -> List[List[Dict]]:
@@ -63,7 +56,7 @@ class ScoutBotService:
                     search_results = self.reddit.subreddit(subreddit).search(
                         search_query,
                         sort = "top",
-                        limit = 10,
+                        limit = 50,
                         time_filter = "month")
 
                     for search_result in search_results:
@@ -141,15 +134,12 @@ class ScoutBotService:
                     if post_sentiment == "Negative":
                         result_batches.append(
                             {"subreddit": results["subreddit"],
-                             "search_query": results[
-                                 "search_query"],
+                             "search_query": results["search_query"],
+                             "post_id": results["post_id"],
                              "post_title": results["post_title"],
-                             "post_content": results[
-                                 "post_content"],
+                             "post_content": results["post_content"],
                              "post_sentiment": post_sentiment})
                         sentiment_collection.append(result_batches)
-                        logger.info(
-                            f"Negative post captured: '{results["post_title"]}' from r/{results['subreddit']}.")
 
             logger.info(
                 f"Analysis complete. {len(sentiment_collection)} negative posts found. {skipped_posts} posts skipped.")
@@ -158,5 +148,110 @@ class ScoutBotService:
 
         except Exception as e:
             logger.error(f"Error analyzing search results: {e}",
-                             exc_info = True)
+                         exc_info = True)
             return []
+
+
+    def agent_validate_posts(self) -> Dict[str, str] | None:
+        """
+        Runs the Gemini agent to dynamically evaluate negative-sentiment posts
+        and determine which ones describe problems solvable by software.
+
+        Returns:
+            str: The agent's final summary response.
+        """
+        try:
+            if not self.gemini:
+                self.gemini = initialize_gemini()
+
+            logger.info(
+                "Agent validate posts: starting Gemini agentic session.")
+
+            response = self.gemini.models.generate_content(
+                model = settings.AGENT_MODEL,
+                contents = settings.AGENT_VALIDATE_POSTS_OBJECTIVE,
+                config = provide_agent_tools(
+                    tools = [self.analyze_search_results,
+                             self.store_validated_posts]
+                )
+            )
+
+            agent_response = response.text
+            logger.info("Agent validate posts: session complete.")
+            logger.info(f"{agent_response}")
+
+        except errors.ServerError as e:
+            logger.error(f"Gemini server error: {e}")
+            return {
+                "error": "Model temporarily unavailable. Please try again later."}
+
+        except errors.ClientError as e:
+            if "RESOURCE_EXHAUSTED" in str(e):
+                logger.error(
+                    "Quota exceeded. Try again after reset or switch models.")
+                return {"error": "Quota exceeded"}
+            raise
+
+        except Exception as e:
+            logger.error(
+                f"Unexpected error while running Gemini validation agent {e}")
+            raise SystemExit("Agent terminated due to an error.")
+
+
+    def store_validated_posts(self, post_ids: List[str]) -> Dict:
+        """
+        Persists a list of validated post IDs to the `validated_posts` table,
+        staging them for downstream processing.
+
+        Args:
+            post_ids (List[str]): Reddit submission IDs identified by the agent
+                                  as software-solvable problems.
+
+        Returns:
+            Dict: A summary with the count of newly stored IDs and any that were
+                  already present (skipped).
+        """
+        if not post_ids:
+            logger.warning(
+                "store_validated_posts called with an empty list. Nothing to store.")
+            return {"stored": 0, "skipped": 0}
+
+        stored = 0
+        skipped = 0
+
+        try:
+            existing_ids = set()
+
+            rows = self.session.query(ValidatedPost.submission_id).filter(
+                ValidatedPost.submission_id.in_(post_ids)
+            ).all()
+
+            for row in rows:
+                existing_ids.add(row.submission_id)
+
+            for post_id in post_ids:
+                if post_id in existing_ids:
+                    logger.info(
+                        f"Post '{post_id}' already in validated_posts skipping.")
+                    skipped += 1
+                    continue
+
+                self.session.add(ValidatedPost(submission_id = post_id))
+                stored += 1
+                logger.info(f"Post '{post_id}' staged in validated_posts.")
+
+            self.session.commit()
+            logger.info(
+                f"store_validated_posts complete: {stored} stored, {skipped} skipped."
+            )
+
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Failed to store validated posts: {e}",
+                         exc_info = True)
+            return {"stored": 0, "skipped": 0}
+
+        finally:
+            self.session.close()
+
+        return {"stored": stored, "skipped": skipped}

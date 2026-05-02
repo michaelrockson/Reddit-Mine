@@ -13,6 +13,15 @@ scheduler = BlockingScheduler(jobstores = job_stores)
 
 agent_job = JobService()
 
+scheduler.add_job(
+    agent_job.safe_run(agent_job.run_scout_bot),
+    trigger = "interval",
+    weeks = 1,
+    next_run_time = datetime.now() + timedelta(seconds = 10),
+    id = "run_scout_bot",
+    replace_existing = True
+)
+
 # Schedule pipeline runs every 2 weeks
 scheduler.add_job(
     agent_job.run_all_pipelines,
