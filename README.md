@@ -3,12 +3,10 @@
 This agent monitors niche subreddits to surface and validate real, recurring frustrations from real people before you
 write a single line of product code.
 
-It runs on a scheduled pipeline: collect posts and comments from configured subreddits, score sentiment to filter noise,
-then use Gemini to produce structured problem briefs your team can actually act on.
+It runs on a multi-stage pipeline: a **Scout Bot** identifies potential software-solvable pain points from Reddit searches, an **Ingress Service** fetches the full validated data and a **Sentiment Pipeline** filters noise. Finally, a **Core Pipeline** uses Gemini to produce structured problem briefs your team can actually act on.
 
 Results are persisted to a database and optionally exported to Notion or delivered by email.
-Built with a clean service/repository architecture, pipeline-based data flow and runtime secrets management via
-Infisical.
+Built with a clean service/repository architecture, agent-driven pre-validation and runtime secrets management via Infisical.
 
 *Flask · SQLAlchemy · Gemini · Reddit API · Infisical*
 
@@ -21,15 +19,16 @@ added later by creating a new input client and matching ingress service.
 ## 2. Problem
 
 Manual discovery of recurring real-world problems across subreddits is slow and noisy. This service automates discovery,
-validation, and packaging of those findings so teams can act faster.
+validation and packaging of those findings so teams can act faster.
 
 ## 3. Solution
 
-- Periodic collection of posts and comments from configured subreddits
-- Sentiment analysis on collected data to validate signal strength
-- LLM-based curation (Gemini) to produce structured problem briefs
-- Secrets managed dynamically from [Infisical](https://infisical.com) at runtime
-- Output: curated briefs persisted to the database and optionally exported (Email / Notion)
+- **Scout Bot**: Periodic discovery and agent-based validation of pain points from Reddit searches.
+- **Ingress**: targeted collection of posts and comments for validated IDs.
+- **Sentiment**: Sentiment analysis on collected data to validate signal strength.
+- **Core**: LLM-based curation (Gemini) to produce structured problem briefs.
+- **Secrets**: Managed dynamically from [Infisical](https://infisical.com) at runtime.
+- **Output**: Curated briefs persisted to the database and optionally exported (Email / Notion).
 
 ## 4. Quick Start
 
@@ -128,12 +127,14 @@ Reddit-PainPoint-Agent/
 ├── main.py                     # Manual entry point
 │
 ├── pipelines/              # Coordinate the data flow between services
-│   ├── ingress_pipeline.py
-│   ├── sentiment_pipeline.py
-│   ├── core_pipeline.py
-│   └── egress_pipeline.py
+│   ├── scout_pipeline.py       # Discovery & validation (Scout Bot)
+│   ├── ingress_pipeline.py     # Targeted data collection
+│   ├── sentiment_pipeline.py   # Sentiment analysis
+│   ├── core_pipeline.py        # AI Curation (Gemini)
+│   └── egress_pipeline.py      # Data delivery (Notion/Email)
 │
 ├── services/                   # Business logic
+│   ├── scout_bot_service.py    # Agentic scouting & ID staging
 │   ├── infisical_service.py    # Runtime secrets loading from Infisical
 │   ├── ingress_service.py      # Reddit data collection
 │   ├── reddit_service.py       # Scraping & storage pipeline coordinator
@@ -142,6 +143,7 @@ Reddit-PainPoint-Agent/
 │   └── egress_service.py       # Email & Notion exporters
 │
 ├── repositories/               # Data access layer (SQLAlchemy)
+│   ├── validated_post_repository.py
 │   ├── post_repository.py
 │   ├── comment_repository.py
 │   ├── sentiment_repository.py
@@ -187,10 +189,11 @@ The following secrets should be configured in your Infisical project:
 
 ## 7. How it Works
 
-1. **Ingress** — Collect posts + comments from configured subreddits via Reddit OAuth
-2. **Sentiment** — Normalize text, filter noise, run VADER sentiment scoring
-3. **Curation** — Run structured Gemini prompts to identify and package real, recurring problems
-4. **Egress** — Persist validated briefs to the DB and export to configured sinks (Notion / Email)
+1. **Scout** — Discovery of potential pain points via Reddit search + Agentic validation of software solvability.
+2. **Ingress** — Targeted collection of full posts + comments for approved submission IDs.
+3. **Sentiment** — Normalize text, filter noise, run VADER sentiment scoring on approval-ready data.
+4. **Curation** — Run structured Gemini prompts to identify and package real, recurring problems.
+5. **Egress** — Persist validated briefs to the DB and export to configured sinks (Notion / Email).
 
 ## 8. Development Status
 
