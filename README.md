@@ -46,7 +46,7 @@ validation and packaging of those findings so teams can act faster.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/rocksoncodes/Reddit-Painpoint-Agent.git
+   git clone https://github.com/michaelrockson/Reddit-Painpoint-Agent.git
    cd Reddit-Painpoint-Agent
    ```
 2. Run the setup script:
