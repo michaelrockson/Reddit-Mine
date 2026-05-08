@@ -181,7 +181,7 @@ The following secrets should be configured in your Infisical project:
 - Dynamic secrets loading via Infisical
 - Egress helpers extracted to utils/helpers.py
 
-## 9. Notes & Limitations
+## Notes & Limitations
 
 - Backend infrastructure only — no UI
 - Focused exclusively on Reddit as a data source
