@@ -256,7 +256,7 @@ class ScoutBotService:
 
         return {"stored": stored, "skipped": skipped}
 
-        
+
     def has_unprocessed_posts(self) -> bool:
         """
         Checks if there are any validated posts in the database that have
@@ -271,7 +271,8 @@ class ScoutBotService:
             ).count()
             return count > 0
         except Exception as e:
-            logger.error(f"Error checking for unprocessed validated posts: {e}")
+            logger.error(
+                f"Error checking for unprocessed validated posts: {e}")
             return False
         finally:
             self.session.close()

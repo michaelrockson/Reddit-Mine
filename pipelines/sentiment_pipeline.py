@@ -25,7 +25,8 @@ class SentimentPipeline:
             posts = self.service.query_posts_with_comments()
 
             if not posts:
-                logger.warning("No posts available for sentiment analysis. Stopping pipeline.")
+                logger.warning(
+                    "No posts available for sentiment analysis. Stopping pipeline.")
                 return False
 
             logger.info("Analyzing sentiment...")

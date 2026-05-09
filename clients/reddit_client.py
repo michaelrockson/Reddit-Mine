@@ -66,10 +66,10 @@ def _create_reddit_client() -> praw.Reddit | None:
 
     try:
         reddit = praw.Reddit(
-            ratelimit_seconds=2,
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=user_agent,
+            ratelimit_seconds = 2,
+            client_id = client_id,
+            client_secret = client_secret,
+            user_agent = user_agent,
         )
         logger.info("Connection to the Reddit API was successful!")
         return reddit

@@ -1,4 +1,5 @@
 import sys
+
 from database.init_db import init_db
 from pipelines.core_pipeline import CorePipeline
 from pipelines.egress_pipeline import EgressPipeline
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     core = CorePipeline()
     egress = EgressPipeline()
 
-    pipelines = [scout,ingress,sentiment,core,egress]
+    pipelines = [scout, ingress, sentiment, core, egress]
 
     for pipeline in pipelines:
         if isinstance(pipeline, EgressPipeline):

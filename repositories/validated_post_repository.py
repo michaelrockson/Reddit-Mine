@@ -1,6 +1,5 @@
 from typing import List
 
-from sqlalchemy.orm import Session
 from database import get_session
 from database.models import ValidatedPost
 
@@ -13,6 +12,7 @@ class ValidatedPostRepository:
     to be software-solvable problems and are staged for downstream
     pipeline processing.
     """
+
 
     def __init__(self):
         self.session = get_session()

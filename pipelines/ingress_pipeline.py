@@ -25,7 +25,8 @@ class IngressPipeline:
             reddit_data = self.reddit_service.run_reddit_scraper()
 
             if not reddit_data or not reddit_data.get("posts"):
-                logger.warning("No new data fetched from Reddit. Stopping pipeline.")
+                logger.warning(
+                    "No new data fetched from Reddit. Stopping pipeline.")
                 return False
 
             logger.info("Storing scraped data...")

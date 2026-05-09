@@ -27,7 +27,8 @@ class ScoutBotPipeline:
             self.service.agent_validate_posts()
 
             if not self.service.has_unprocessed_posts():
-                logger.warning("No software-solvable problems were validated by the agent. Stopping pipeline.")
+                logger.warning(
+                    "No software-solvable problems were validated by the agent. Stopping pipeline.")
                 return False
 
             logger.info("Scout Bot pipeline complete")
@@ -37,4 +38,3 @@ class ScoutBotPipeline:
             logger.error(f"Error in Scout Bot pipeline: {e}",
                          exc_info = True)
             return False
-

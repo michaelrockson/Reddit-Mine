@@ -29,7 +29,8 @@ class EgressPipeline:
             brief = self.service.query_brief()
 
             if not brief:
-                logger.error("No brief available for egress. Stopping pipeline.")
+                logger.error(
+                    "No brief available for egress. Stopping pipeline.")
                 return False
 
             send_by_channel(
