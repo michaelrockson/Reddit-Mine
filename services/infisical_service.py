@@ -1,5 +1,6 @@
 import os
 from typing import List, Any
+
 from dotenv import load_dotenv
 from infisical_sdk import InfisicalSDKClient
 from infisical_sdk.api_types import MachineIdentityLoginResponse

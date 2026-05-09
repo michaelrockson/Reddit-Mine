@@ -1,3 +1,4 @@
+import sys
 from typing import List, Dict, Tuple, Any
 
 import markdown2
@@ -183,7 +184,8 @@ def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
 
 
 def evaluate_engagements(search_result, cumulated_search_results, subreddit,
-                         search_query, min_upvote_ratio, min_score, min_comments):
+                         search_query, min_upvote_ratio, min_score,
+                         min_comments):
     if (
         search_result.upvote_ratio >= min_upvote_ratio
         and search_result.score >= min_score
@@ -353,3 +355,22 @@ def send_by_channel(service: Any, choice: str, notion_only: str,
     if choice in (email_only, all_channels):
         logger.info("Sending email report...")
         service.send_email()
+
+
+def run_pipeline(pipeline, *args, **kwargs):
+    """
+    Runs a pipeline step.
+
+    If it fails or returns nothing, the program stops.
+
+    Any extra arguments are passed into pipeline.run().
+    """
+    pipeline_name = pipeline.__class__.__name__
+
+    logger.info(f"Running {pipeline_name}...")
+
+    if not pipeline.run(*args, **kwargs):
+        logger.error(f"{pipeline_name} failed or found no data. Exiting.")
+        sys.exit(1)
+
+    logger.info(f"{pipeline_name} execution successful.")

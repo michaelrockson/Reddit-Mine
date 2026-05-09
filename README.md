@@ -1,7 +1,9 @@
 # Reddit Painpoint Agent
 
-Automatically discover and validate real, recurring software problems from Reddit before you write a single line of product code.
-The agent monitors niche subreddits, filters noise with sentiment analysis and uses Gemini to produce structured problem briefs: validated pain points with enough context for your team to act on immediately. 
+Automatically discover and validate real, recurring software problems from Reddit before you write a single line of
+product code.
+The agent monitors niche subreddits, filters noise with sentiment analysis and uses Gemini to produce structured problem
+briefs: validated pain points with enough context for your team to act on immediately.
 Results are persisted to a database and optionally exported to Notion or delivered by email.
 
 *Flask · SQLAlchemy · Gemini · Reddit API · Infisical*
@@ -10,7 +12,8 @@ Results are persisted to a database and optionally exported to Notion or deliver
 
 The agent runs a four-stage pipeline:
 
-- Scout — Searches Reddit for potential pain points and uses an agent to validate software solvability before anything is stored.
+- Scout — Searches Reddit for potential pain points and uses an agent to validate software solvability before anything
+  is stored.
 - Ingress — Fetches full posts and comments for every approved submission ID.
 - Sentiment — Normalizes text, filters noise, and runs VADER scoring to validate signal strength.
 - Curation — Runs structured Gemini prompts to identify recurring problems and package them as problem briefs.
@@ -29,21 +32,26 @@ The agent runs a four-stage pipeline:
 ### Option 1. Automated Setup (Recommended)
 
 Clone the repository:
+
    ```bash
    git clone https://github.com/michaelrockson/Reddit-Painpoint-Agent.git
    cd Reddit-Painpoint-Agent
    ```
+
 Run the setup script:
+
    ```bash
    chmod +x ./setup.sh
    ./setup.sh
    ```
-   *This creates a virtual environment, installs dependencies and initializes your `.env` file.*
+
+*This creates a virtual environment, installs dependencies and initializes your `.env` file.*
 
 ### Option 2. Manual Setup
 
 Clone the repository and navigate to the directory.
 Create and activate a virtual environment:
+
    ```bash
    python -m venv .venv
    # Windows
@@ -51,11 +59,15 @@ Create and activate a virtual environment:
    # macOS/Linux
    source .venv/bin/activate
    ```
+
 Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
+
 Initialize the environment file:
+
    ```bash
    # Windows
    copy .env.example .env

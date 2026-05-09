@@ -43,6 +43,7 @@ class JobService:
                     f"Error running {function.__name__ if hasattr(function, '__name__')
                     else 'anonymous function'}")
 
+
         return wrapper
 
 
