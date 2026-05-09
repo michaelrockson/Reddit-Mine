@@ -1,4 +1,4 @@
-import sys
+import asyncio
 from typing import List, Dict, Tuple, Any
 
 import markdown2
@@ -69,13 +69,14 @@ def get_comments_for_post(session, post_id: str) -> Tuple[List[Dict], int]:
     return comment_records, count
 
 
-def get_comments_from_submission(reddit, submission_id: str,
-                                 comment_limit: int) -> List[Dict[str, Any]]:
+async def get_comments_from_submission(reddit, submission_id: str,
+                                       comment_limit: int) -> List[
+    Dict[str, Any]]:
     """
     Fetch and format comments from a single Reddit submission.
 
     Args:
-        reddit: The Reddit client instance.
+        reddit: The asyncpraw Reddit client instance.
         submission_id: The Reddit submission ID to fetch comments from.
         comment_limit: Max number of comments to retrieve.
 
@@ -84,8 +85,8 @@ def get_comments_from_submission(reddit, submission_id: str,
     """
     comments_collected = []
 
-    submission = reddit.submission(id = submission_id)
-    submission.comments.replace_more(limit = 0)
+    submission = await reddit.submission(id = submission_id)
+    await submission.comments.replace_more(limit = 0)
 
     comments = submission.comments.list()
     if comment_limit:
@@ -159,18 +160,18 @@ def get_posts_from_subreddit(
     return posts
 
 
-def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
+async def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
     """
     Fetch and format a single Reddit submission by its ID.
 
     Args:
-        reddit: The Reddit client instance.
+        reddit: The asyncpraw Reddit client instance.
         submission_id: The Reddit submission ID to fetch.
 
     Returns:
         Dict[str, Any]: Post data dictionary.
     """
-    submission = reddit.submission(id = submission_id)
+    submission = await reddit.submission(id = submission_id)
     return {
         "subreddit": submission.subreddit.display_name,
         "submission_id": submission.id,
@@ -337,10 +338,29 @@ def format_email(
         return ""
 
 
+async def _deliver_all_async(service: Any) -> None:
+    """
+    Runs Notion page creation and email delivery concurrently.
+    Both underlying methods are synchronous (SMTP and notion-client SDKs), so
+    they are offloaded to threads via asyncio.to_thread to avoid blocking the
+    event loop.
+
+    Args:
+        service: An EgressService instance.
+    """
+    logger.info("Delivering to all channels...")
+    await asyncio.gather(
+        asyncio.to_thread(service.create_notion_page),
+        asyncio.to_thread(service.send_email),
+    )
+
+
 def send_by_channel(service: Any, choice: str, notion_only: str,
                     email_only: str, all_channels: str) -> None:
     """
     Dispatch a processed brief to the appropriate output channels.
+    When all_channels is selected, Notion and email are sent concurrently.
+
     Args:
         service: An EgressService instance with create_notion_page() and send_email() methods.
         choice (str): The user's selected output channel.
@@ -348,11 +368,15 @@ def send_by_channel(service: Any, choice: str, notion_only: str,
         email_only (str): Config value representing the email-only choice.
         all_channels (str): Config value representing the all-channels choice.
     """
-    if choice in (notion_only, all_channels):
+    if choice == all_channels:
+        asyncio.run(_deliver_all_async(service))
+        return
+
+    if choice == notion_only:
         logger.info("Publishing to Notion...")
         service.create_notion_page()
 
-    if choice in (email_only, all_channels):
+    if choice == email_only:
         logger.info("Sending email report...")
         service.send_email()
 
@@ -379,3 +403,67 @@ def run_pipeline(pipeline, *args, **kwargs):
 
     logger.info(f"{pipeline_name} execution successful.")
     return True
+
+
+async def search_one(
+    reddit,
+    subreddit_name: str,
+    query: str,
+    min_upvote_ratio: float,
+    min_score: int,
+    min_comments: int,
+) -> List[Dict]:
+    """
+    Searches a single subreddit for one query and returns posts that meet the
+    configured engagement thresholds.
+
+    Intended to be scheduled as a coroutine inside asyncio.gather() so that
+    multiple subreddit/query combinations run concurrently.
+
+    Args:
+        reddit: The asyncpraw Reddit client instance.
+        subreddit_name (str): Name of the subreddit to search (without 'r/').
+        query (str): Search query string passed to the Reddit search API.
+        min_upvote_ratio (float): Minimum upvote ratio a post must have to be included.
+        min_score (int): Minimum score (upvotes) a post must have to be included.
+        min_comments (int): Minimum comment count a post must have to be included.
+
+    Returns:
+        List[Dict]: Posts that passed every engagement filter for this
+        subreddit/query combination. Returns an empty list if no qualifying
+        posts are found.
+    """
+    cumulated_search_results = []
+
+    logger.info(
+        f"Firing Reddit API call on r/{subreddit_name} with query='{query}'")
+
+    subreddit = await reddit.subreddit(subreddit_name)
+
+    async for search_result in subreddit.search(
+        query,
+        sort = "top",
+        limit = 100,
+        time_filter = "month"
+    ):
+        evaluate_engagements(
+            search_result,
+            cumulated_search_results,
+            subreddit_name,
+            query,
+            min_upvote_ratio,
+            min_score,
+            min_comments
+        )
+
+    if not cumulated_search_results:
+        logger.warning(
+            f"No qualifying results for query '{query}' on r/{subreddit_name}."
+        )
+    else:
+        logger.info(
+            f"Query '{query}' on r/{subreddit_name} found "
+            f"{len(cumulated_search_results)} post(s)."
+        )
+
+    return cumulated_search_results

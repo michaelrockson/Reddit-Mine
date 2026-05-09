@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, List, Any
 
 from clients.reddit_client import get_reddit_client
@@ -12,11 +13,14 @@ class IngressService:
     """
     Service for handling Reddit data ingestion, focused on fetching posts
     that have been validated by the scout bot and retrieving their comments.
+
+    All Reddit I/O methods are async coroutines. The sync bridge lives in
+    RedditService.run_reddit_scraper() via asyncio.run().
     """
 
 
     def __init__(self):
-        self.reddit = get_reddit_client()
+        self.reddit = None  
         self.validated_repo = ValidatedPostRepository()
         self.session = get_session()
         self.comment_limit = settings.DEFAULT_COMMENT_LIMIT
@@ -25,21 +29,25 @@ class IngressService:
         self.comments = []
 
 
-    def fetch_validated_posts(self) -> List[Dict[str, Any]]:
+    async def _ensure_reddit(self) -> None:
+        """Lazily acquires the asyncpraw Reddit singleton if not already set."""
+        if not self.reddit:
+            self.reddit = await get_reddit_client()
+
+
+    async def fetch_validated_posts(self) -> List[Dict[str, Any]]:
         """
         Reads unprocessed submission IDs from the `validated_posts` table,
-        fetches each post's full data directly from the Reddit API using its
-        submission ID.
+        then fetches every post's full data from the Reddit API concurrently
+        using asyncio.gather().
 
-        Then marks those records as processed so they are not
-        picked up again on the next run.
+        Marks fetched records as processed so they are not picked up again on
+        the next run.
 
         Returns:
             List[Dict[str, Any]]: List of post data dicts for validated submissions.
         """
-        if not self.reddit:
-            logger.warning("Reddit client not found. Reconnecting...")
-            self.reddit = get_reddit_client()
+        await self._ensure_reddit()
 
         try:
             validated_repo = ValidatedPostRepository()
@@ -50,25 +58,32 @@ class IngressService:
                     "fetch_validated_posts: no unprocessed validated posts found.")
                 return []
 
-            submission_ids = [record.submission_id for record in unprocessed]
+            submission_ids = []
+            for record in unprocessed:
+                submission_ids.append(record.submission_id)
+
             logger.info(
                 f"fetch_validated_posts: {len(submission_ids)} validated IDs to scrape: {submission_ids}"
             )
 
-            posts: List[Dict[str, Any]] = []
-            processed_ids: List[str] = []
-
+            coros = []
             for submission_id in submission_ids:
-                try:
-                    post_data = get_post_by_id(self.reddit, submission_id)
-                    posts.append(post_data)
-                    processed_ids.append(submission_id)
+                coros.append(get_post_by_id(self.reddit, submission_id))
 
-                except Exception as e:
+            raw_results = await asyncio.gather(*coros, return_exceptions = True)
+
+            posts = []
+            processed_ids = []
+
+            for i, result in enumerate(raw_results):
+                if isinstance(result, Exception):
                     logger.error(
-                        f"Failed to fetch submission '{submission_id}': {e}",
+                        f"Failed to fetch submission '{submission_ids[i]}': {result}",
                         exc_info = True
                     )
+                else:
+                    posts.append(result)
+                    processed_ids.append(submission_ids[i])
 
             if processed_ids:
                 validated_repo.mark_as_processed(processed_ids)
@@ -99,10 +114,9 @@ class IngressService:
         """
         if not self.posts:
             logger.warning(
-                "No posts available. Running fetch_validated_posts() first...")
-            self.fetch_validated_posts()
+                "No posts available. Run fetch_validated_posts() first.")
 
-        submission_ids: List[str] = []
+        submission_ids = []
 
         for post in self.posts:
             if "submission_id" in post:
@@ -113,9 +127,9 @@ class IngressService:
         return submission_ids
 
 
-    def fetch_reddit_comments(self) -> List[Dict[str, Any]]:
+    async def fetch_reddit_comments(self) -> List[Dict[str, Any]]:
         """
-        Fetch comments for each submission ID collected from posts.
+        Fetch comments for every submission ID concurrently using asyncio.gather().
         Returns:
             List[Dict[str, Any]]: List of comment data dictionaries.
         """
@@ -124,20 +138,30 @@ class IngressService:
                 "No submission IDs available. Running fetch_post_ids()...")
             self.fetch_post_ids()
 
-        comments_collected: List[Dict[str, Any]] = []
         logger.info(
-            f"Fetching comments from {len(self.submission_ids)} submissions...")
+            f"Fetching comments from {len(self.submission_ids)} submissions concurrently...")
 
+        coros = []
         for submission_id in self.submission_ids:
-            try:
-                comments = get_comments_from_submission(self.reddit,
-                                                        submission_id,
-                                                        self.comment_limit)
-                comments_collected.extend(comments)
-            except Exception as e:
+            coros.append(
+                get_comments_from_submission(
+                    self.reddit, submission_id, self.comment_limit
+                )
+            )
+
+        raw_results = await asyncio.gather(*coros, return_exceptions = True)
+
+        comments_collected = []
+
+        for i, result in enumerate(raw_results):
+            if isinstance(result, Exception):
                 logger.error(
-                    f"Error fetching comments for submission {submission_id}: {e}",
-                    exc_info = True)
+                    f"Error fetching comments for submission {self.submission_ids[i]}: {result}",
+                    exc_info = True
+                )
+            else:
+                for comment in result:
+                    comments_collected.append(comment)
 
         self.comments = comments_collected
         logger.info(f"Collected {len(comments_collected)} comments")

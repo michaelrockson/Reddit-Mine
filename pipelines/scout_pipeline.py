@@ -21,9 +21,6 @@ class ScoutBotPipeline:
             bool: True if the pipeline succeeded and found data, False otherwise.
         """
         try:
-            logger.info("Scout Bot pipeline started")
-
-            logger.info("Executing scout agent validation...")
             self.service.agent_validate_posts()
 
             if not self.service.has_unprocessed_posts():
@@ -31,7 +28,6 @@ class ScoutBotPipeline:
                     "No software-solvable problems were validated by the agent. Stopping pipeline.")
                 return False
 
-            logger.info("Scout Bot pipeline complete")
             return True
 
         except Exception as e:

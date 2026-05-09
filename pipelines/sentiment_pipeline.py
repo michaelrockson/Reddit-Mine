@@ -19,7 +19,6 @@ class SentimentPipeline:
             bool: True if the pipeline succeeded and found data, False otherwise.
         """
         try:
-            logger.info("Sentiment pipeline started")
 
             logger.info("Querying posts with comments...")
             posts = self.service.query_posts_with_comments()

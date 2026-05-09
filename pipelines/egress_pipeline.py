@@ -40,7 +40,6 @@ class EgressPipeline:
                 email_only = self.email_only,
                 all_channels = self.all_channels,
             )
-            logger.info("Egress pipeline complete")
             return True
 
         except Exception as e:

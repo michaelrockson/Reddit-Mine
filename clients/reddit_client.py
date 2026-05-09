@@ -1,10 +1,24 @@
-import praw
+import asyncio
+
+import asyncpraw
 from dotenv import load_dotenv
 
 from settings import settings
 from utils.logger import logger
 
 _reddit_instance = None
+_reddit_lock = None
+
+
+def _get_lock() -> asyncio.Lock:
+    """
+    Returns the module-level asyncio Lock, creating it lazily inside a running
+    event loop so it is always bound to the correct loop.
+    """
+    global _reddit_lock
+    if _reddit_lock is None:
+        _reddit_lock = asyncio.Lock()
+    return _reddit_lock
 
 
 def _validate_reddit_secrets(reddit_secrets: dict) -> bool:
@@ -40,12 +54,13 @@ def _validate_reddit_secrets(reddit_secrets: dict) -> bool:
     return True
 
 
-def _create_reddit_client() -> praw.Reddit | None:
+def _create_reddit_client() -> asyncpraw.Reddit | None:
     """
-    Creates a new Reddit client instance.
+    Creates a new asyncpraw Reddit client instance.
+    Construction is synchronous; network I/O only happens when methods are awaited.
 
     Returns:
-        praw.Reddit | None: The Reddit client instance.
+        asyncpraw.Reddit | None: The Reddit client instance, or None on failure.
     """
     load_dotenv()
 
@@ -65,13 +80,12 @@ def _create_reddit_client() -> praw.Reddit | None:
         return None
 
     try:
-        reddit = praw.Reddit(
-            ratelimit_seconds = 2,
+        reddit = asyncpraw.Reddit(
             client_id = client_id,
             client_secret = client_secret,
             user_agent = user_agent,
         )
-        logger.info("Connection to the Reddit API was successful!")
+        logger.info("asyncpraw Reddit client created successfully.")
         return reddit
 
     except Exception as e:
@@ -79,19 +93,40 @@ def _create_reddit_client() -> praw.Reddit | None:
         return None
 
 
-def get_reddit_client() -> praw.Reddit | None:
+async def get_reddit_client() -> asyncpraw.Reddit | None:
     """
-    Returns the Reddit client instance.
+    Returns the asyncpraw Reddit client singleton.
+    Creates it on first call; subsequent calls return the cached instance.
 
     Returns:
-        praw.Reddit | None: The Reddit client instance.
+        asyncpraw.Reddit | None: The Reddit client instance.
     """
     global _reddit_instance
 
-    if _reddit_instance is None:
-        logger.info("Creating new Reddit client instance.")
-        _reddit_instance = _create_reddit_client()
-    else:
-        logger.info("Returning existing Reddit client instance.")
+    async with _get_lock():
+        if _reddit_instance is None:
+            logger.info("Creating new asyncpraw Reddit client instance.")
+            _reddit_instance = _create_reddit_client()
+        else:
+            logger.info("Returning existing asyncpraw Reddit client instance.")
 
     return _reddit_instance
+
+
+async def close_reddit_client() -> None:
+    """
+    Closes the asyncpraw Reddit client and resets the singleton.
+    Must be called at the end of each pipeline's async context to release the
+    underlying aiohttp session cleanly.
+    """
+    global _reddit_instance, _reddit_lock
+
+    if _reddit_instance is not None:
+        try:
+            await _reddit_instance.close()
+            logger.info("asyncpraw Reddit client closed.")
+        except Exception as e:
+            logger.warning(f"Error while closing Reddit client: {e}")
+        finally:
+            _reddit_instance = None
+            _reddit_lock = None

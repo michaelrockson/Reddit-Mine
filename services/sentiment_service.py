@@ -48,8 +48,6 @@ class SentimentService:
         """
         post_records = []
 
-        logger.info("Querying posts with comments")
-
         try:
             posts = self.post_repo.get_all_posts()
             total_comments = 0
@@ -89,7 +87,7 @@ class SentimentService:
             logger.info("Querying posts for analysis")
             self.query_posts_with_comments()
 
-        logger.info(f"Analyzing sentiment for {len(self.query_results)} posts")
+        logger.info(f"Analyzing sentiment for {len(self.query_results)} post(s)")
 
         try:
             for posts in self.query_results:
@@ -130,7 +128,6 @@ class SentimentService:
         Returns:
             List[Dict]: List of sentiment summaries for each post.
         """
-        logger.info("Summarizing sentiment")
 
         if not self.post_sentiment_scores:
             logger.info(
@@ -204,7 +201,6 @@ class SentimentService:
             return
 
         try:
-            logger.info("Storing sentiments")
 
             sentiments_to_store = []
             for post_sentiment_summary in sentiments:

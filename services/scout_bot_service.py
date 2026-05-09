@@ -1,14 +1,15 @@
+import asyncio
 from typing import List, Dict
 
 from google.genai import errors
 from nltk.sentiment import SentimentIntensityAnalyzer
 
 from clients.gemini_client import initialize_gemini, provide_agent_tools
-from clients.reddit_client import get_reddit_client
+from clients.reddit_client import get_reddit_client, close_reddit_client
 from database import get_session
 from database.models import ValidatedPost
 from settings import settings
-from utils.helpers import evaluate_engagements
+from utils.helpers import search_one
 from utils.logger import logger
 
 
@@ -29,7 +30,7 @@ class ScoutBotService:
         self.min_score = settings.MIN_SCORE
         self.min_comments = settings.MIN_COMMENTS
         self.min_upvote_ratio = settings.MIN_UPVOTE_RATIO
-        self.reddit = get_reddit_client()
+        self.reddit = None
         self.session = get_session()
         self.sia = SentimentIntensityAnalyzer()
         self.gemini = initialize_gemini()
@@ -37,47 +38,47 @@ class ScoutBotService:
         self.search_result_sentiments = []
 
 
-    def search_subreddit(self) -> List[List[Dict]]:
+    async def _search_all_async(self) -> List[List[Dict]]:
         """
-        Searches configured subreddits using predefined queries and stores the results.
-        Results are grouped by combination and stored in self.search_results.
+        Fans out all subreddit/query combinations concurrently via asyncio.gather(),
+        then assembles results into the same nested-list structure that the rest of
+        the system expects.
+
+        Closes the asyncpraw client in a finally block.
+
         Returns:
             List[List[Dict]]: Nested list where each inner list contains post dicts
             for a single subreddit/query pair.
         """
+        self.reddit = await get_reddit_client()
+
         try:
-            search_results_list: List[List[Dict[str, str]]] = []
-
+            coros = []
             for subreddit in self.subreddits:
-                for search_query in self.search_queries:
-                    cumulated_search_results: List[Dict[str, str]] = []
-                    logger.info(
-                        f"Firing Reddit API call on r/{subreddit} with query='{search_query}'")
-                    search_results = self.reddit.subreddit(subreddit).search(
-                        search_query,
-                        sort = "top",
-                        limit = 100,
-                        time_filter = "month")
+                for query in self.search_queries:
+                    coros.append(search_one(
+                        self.reddit,
+                        subreddit,
+                        query,
+                        self.min_upvote_ratio,
+                        self.min_score,
+                        self.min_comments
+                    ))
 
-                    for search_result in search_results:
-                        evaluate_engagements(search_result,
-                                             cumulated_search_results,
-                                             subreddit, search_query,
-                                             self.min_upvote_ratio,
-                                             self.min_score, self.min_comments)
+            raw_results = await asyncio.gather(*coros, return_exceptions = True)
 
-                    if not cumulated_search_results:
-                        logger.warning(
-                            f"No results for query '{search_query}' on r/{subreddit} found: {len(cumulated_search_results)} posts")
-                    else:
-                        logger.info(
-                            f"Query '{search_query}' on r/{subreddit} found {len(cumulated_search_results)} posts")
-
-                    search_results_list.append(cumulated_search_results)
+            search_results_list = []
+            for result in raw_results:
+                if isinstance(result, Exception):
+                    logger.error(f"A search task failed: {result}")
+                    search_results_list.append([])
+                else:
+                    search_results_list.append(result)
 
             self.search_results = search_results_list
             logger.info(
-                f"Searching subreddits complete! {len(search_results_list)} active indexes")
+                f"Searching subreddits complete! {len(search_results_list)} active indexes"
+            )
             return search_results_list
 
         except RuntimeError as e:
@@ -85,9 +86,30 @@ class ScoutBotService:
             return []
 
         except Exception as e:
-            logger.error(f"Unexpected error while querying Reddit API: {e}",
-                         exc_info = True)
+            logger.error(
+                f"Unexpected error while querying Reddit API: {e}",
+                exc_info = True
+            )
             return []
+
+        finally:
+            await close_reddit_client()
+            self.reddit = None
+
+
+    def search_subreddit(self) -> List[List[Dict]]:
+        """
+        Searches configured subreddits using predefined queries and stores the results.
+        Results are grouped by subreddit/query combination.
+
+        This is the sync entry point used by analyze_search_results() and the
+        scout pipeline. Delegates all I/O to _search_all_async() via asyncio.run().
+
+        Returns:
+            List[List[Dict]]: Nested list where each inner list contains post dicts
+            for a single subreddit/query pair.
+        """
+        return asyncio.run(self._search_all_async())
 
 
     def analyze_search_results(self) -> List[List[Dict[str, str]]]:

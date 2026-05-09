@@ -4,11 +4,30 @@ from google.genai import types
 from settings import settings
 from utils.logger import logger
 
+_gemini_instance = None
+
 
 def initialize_gemini() -> genai.Client:
     """
-    Initializes the Gemini client using the API key from environment variables.
+    Returns the Gemini client singleton.
+
+    Creates the client on the first call using the configured API key and
+    caches it for all subsequent calls. This prevents redundant initializations
+    when multiple services (e.g. ScoutBotService, CoreService) call this
+    function during the same pipeline run.
+
+    Returns:
+        genai.Client: The initialized Gemini client.
+
+    Raises:
+        SystemExit: If the API key is missing or client construction fails.
     """
+    global _gemini_instance
+
+    if _gemini_instance is not None:
+        logger.debug("Returning existing Gemini client instance.")
+        return _gemini_instance
+
     api_key = settings.GEMINI_API_KEY
 
     if not api_key:
@@ -17,9 +36,9 @@ def initialize_gemini() -> genai.Client:
             "Startup failed: Please set your GEMINI_API_KEY to initialize the agent.")
 
     try:
-        client = genai.Client(api_key = api_key)
+        _gemini_instance = genai.Client(api_key = api_key)
         logger.info("Gemini client initialized successfully. Agent is ready.")
-        return client
+        return _gemini_instance
 
     except Exception as e:
         logger.exception(f"Failed to initialize Gemini client: {e}")

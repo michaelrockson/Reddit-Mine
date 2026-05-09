@@ -1,6 +1,14 @@
+aiofiles==25.1.0
+aiohappyeyeballs==2.6.1
+aiohttp==3.13.5
+aiosignal==1.4.0
+aiosqlite==0.17.0
 annotated-types==0.7.0
 anyio==4.10.0
 APScheduler==3.11.2
+asyncpraw==7.8.1
+asyncprawcore==2.4.0
+attrs==26.1.0
 blinker==1.9.0
 cachetools==5.5.2
 certifi==2025.8.3
@@ -23,14 +31,13 @@ joblib==1.5.1
 MarkupSafe==3.0.2
 nltk==3.9.1
 notion-client==2.4.0
-praw==7.8.1
-prawcore==2.4.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pydantic==2.11.7
 pydantic_core==2.33.2
 PyMySQL==1.1.2
 python-dotenv==1.1.1
+propcache==0.5.2
 regex==2025.7.34
 requests==2.32.4
 rsa==4.9.1
@@ -45,4 +52,5 @@ update-checker==0.18.0
 urllib3==2.5.0
 websocket-client==1.8.0
 websockets==15.0.1
+yarl==1.23.0
 Werkzeug==3.1.3

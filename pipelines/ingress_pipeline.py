@@ -19,7 +19,6 @@ class IngressPipeline:
             bool: True if the pipeline succeeded and found data, False otherwise.
         """
         try:
-            logger.info("Ingress pipeline started")
 
             logger.info("Scraping data from Reddit...")
             reddit_data = self.reddit_service.run_reddit_scraper()
@@ -29,7 +28,6 @@ class IngressPipeline:
                     "No new data fetched from Reddit. Stopping pipeline.")
                 return False
 
-            logger.info("Storing scraped data...")
             self.reddit_service.run_reddit_storage(reddit_data)
 
             return True
