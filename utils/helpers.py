@@ -444,7 +444,7 @@ async def search_one(
         query,
         sort = "top",
         limit = 100,
-        time_filter = "month"
+        time_filter = "week"
     ):
         evaluate_engagements(
             search_result,

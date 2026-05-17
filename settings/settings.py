@@ -90,24 +90,13 @@ if missing_critical:
 # low so the scout agent payload stays under ~50k tokens.
 # =====================================================
 DEFAULT_SUBREDDITS: List[str] = [
-    "smallbusiness",       
-    "Entrepreneur",        
-    "freelance",          
-    "productivity",       
-    "ADHD",              
-    "personalfinance",     
-    "povertyfinance",     
-    "careerguidance",     
-    "antiwork",          
-    "cscareerquestions",   
-    "burnout",           
-    "selfimprovement",     
-    "webdev",              
-    "SideProject",         
-    "startups",            
+    "smallbusiness",
+    "agency",
+    "sales",
+    "Entrepreneur",
 ]
-DEFAULT_POST_LIMIT: int = 50  
-DEFAULT_COMMENT_LIMIT: int = 50 
+DEFAULT_POST_LIMIT: int = 50
+DEFAULT_COMMENT_LIMIT: int = 50
 
 # =====================================================
 # REDDIT SCOUT BOT QUERIES SETTINGS
@@ -115,23 +104,21 @@ DEFAULT_COMMENT_LIMIT: int = 50
 MAX_SCOUT_RESULTS: int = 30
 
 SEARCH_QUERIES: List[str] = [
-    "This takes too long",
-    "How to stop spending money on",
-    "Overwhelmed by",
-    "I've tried everything",
-    "What's the hardest part about",
-    "Can't stop procrastinating",
-    "Imposter syndrome",
-    "Feeling left behind",
-    "Analysis paralysis",
-    "Completely burned out from",
-    "There has to be a better way",
-    "Nothing seems to work for",
-    "Living paycheck to paycheck",
-    "Lack of motivation to",
-    "Why isn't there an app that",
+    "takes too long to",
+    "there has to be a better way",
+    "why is this so hard",
+    "this is frustrating",
+    "tired of dealing with",
+    "nothing seems to work for",
+    "i've tried everything",
+    "biggest struggle with",
+    "most annoying part of",
+    "hardest part of",
+    "anyone else struggling with",
+    "how do you deal with",
+    "hate using",
+    "worst part of",
 ]
-
 
 # =====================================================
 # REDDIT DATA FILTERING REQUIREMENTS
@@ -143,7 +130,8 @@ MIN_UPVOTE_RATIO = 0.50
 # =====================================================
 # AGENT SETTINGS AND OBJECTIVES
 # =====================================================
-AGENT_MODEL = "gemini-2.5-flash"
+AGENT_MODEL = "gemini-3.1-flash-lite-preview"
+SCOUT_MODEL = "gemini-3.1-flash-lite-preview"
 SCOUT_OBJECTIVE = """
 You are a market scout agent.
 

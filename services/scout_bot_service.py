@@ -201,7 +201,7 @@ class ScoutBotService:
                 "Agent validate posts: starting Gemini agentic session.")
 
             response = self.gemini.models.generate_content(
-                model = settings.AGENT_MODEL,
+                model = settings.SCOUT_MODEL,
                 contents = settings.AGENT_VALIDATE_POSTS_OBJECTIVE,
                 config = provide_agent_tools(
                     tools = [self.analyze_search_results,
