@@ -86,16 +86,18 @@ if missing_critical:
 
 # =====================================================
 # REDDIT DATA INGRESS SETTINGS
-# Free-tier token budget: keep subreddit × query count
-# low so the scout agent payload stays under ~50k tokens.
 # =====================================================
 DEFAULT_SUBREDDITS: List[str] = [
+    "accounting",
     "smallbusiness",
-    "ghana",
-    "agency",
-    "problems",
-    "freelance",
+    "startups",
     "Entrepreneur",
+    "sales",
+    "freelance",
+    "architecture",
+    "logistics",
+    "supplychain",
+    "realtors"
 ]
 DEFAULT_POST_LIMIT: int = 50
 DEFAULT_COMMENT_LIMIT: int = 50
@@ -106,14 +108,25 @@ DEFAULT_COMMENT_LIMIT: int = 50
 MAX_SCOUT_RESULTS: int = 30
 
 SEARCH_QUERIES: List[str] = [
-    "we're losing money because",
-    "I've tried every tool for",
-    "there's no good software for",
-    "I pay too much for",
-    "wish there was a way to",
-    "our biggest bottleneck is",
-    "still doing this manually",
-    "can't find a solution for"
+    "tired of",
+    "frustrated",
+    "annoying",
+    "hate",
+    "nightmare",
+    "painful",
+    "struggling with",
+    "fed up",
+    "overwhelmed",
+    "burned out",
+    "stressful",
+    "time consuming",
+    "manual process",
+    "repetitive",
+    "tedious",
+    "inefficient",
+    "disorganized",
+    "messy",
+    "confusing"
 ]
 
 # =====================================================
@@ -126,8 +139,8 @@ MIN_UPVOTE_RATIO = 0.50
 # =====================================================
 # AGENT SETTINGS AND OBJECTIVES
 # =====================================================
-AGENT_MODEL = "gemini-3.1-flash-lite-preview"
-SCOUT_MODEL = "gemini-3.1-flash-lite-preview"
+AGENT_MODEL = "gemini-2.5-flash"
+SCOUT_MODEL = "gemini-2.5-flash"
 SCOUT_OBJECTIVE = """
 You are a market scout agent.
 
@@ -200,3 +213,15 @@ Output:
 - A brief summary of how many posts were reviewed, how many qualified, and why the non-qualifying
   posts were excluded.
 """
+
+# =====================================================
+# RATE LIMITING CONFIGURATION
+# =====================================================
+REDDIT_MAX_REQUESTS_PER_MIN: int = 55   # stay 5 below Reddit's 60 rpm limit
+REDDIT_MAX_CONCURRENCY: int = 5         # max simultaneous in-flight Reddit requests
+REDDIT_BATCH_SIZE: int = 5              # coroutines per batched_gather batch
+REDDIT_BATCH_DELAY: float = 1.5         # seconds to sleep between batches
+REDDIT_MAX_RETRIES: int = 5             # max tenacity retry attempts on a 429
+GEMINI_MAX_REQUESTS_PER_MIN: int = 10   # req/min cap for Gemini API
+GEMINI_MAX_CONCURRENCY: int = 2         # max simultaneous in-flight Gemini requests
+GEMINI_MAX_RETRIES: int = 4             # max tenacity retry attempts on quota error

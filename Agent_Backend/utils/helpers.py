@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from Agent_Backend.database.models import Comment, Post
 from Agent_Backend.utils.logger import logger
+from Agent_Backend.utils.rate_limiter import reddit_limiter, reddit_retry
 
 
 def serialize_comment(comment: Comment) -> Dict:
@@ -69,11 +70,15 @@ def get_comments_for_post(session, post_id: str) -> Tuple[List[Dict], int]:
     return comment_records, count
 
 
+@reddit_retry
 async def get_comments_from_submission(reddit, submission_id: str,
                                        comment_limit: int) -> List[
     Dict[str, Any]]:
     """
     Fetch and format comments from a single Reddit submission.
+
+    Rate-limited via ``reddit_limiter`` (semaphore + token bucket) and
+    automatically retried with exponential back-off on 429 errors.
 
     Args:
         reddit: The asyncpraw Reddit client instance.
@@ -85,26 +90,27 @@ async def get_comments_from_submission(reddit, submission_id: str,
     """
     comments_collected = []
 
-    submission = await reddit.submission(id = submission_id)
-    await submission.comments.replace_more(limit = 0)
+    async with reddit_limiter:
+        submission = await reddit.submission(id = submission_id)
+        await submission.comments.replace_more(limit = 0)
 
-    comments = submission.comments.list()
-    if comment_limit:
-        comments = comments[:comment_limit]
+        comments = submission.comments.list()
+        if comment_limit:
+            comments = comments[:comment_limit]
 
-    for comment in comments:
-        if not comment.body or comment.body in ("[deleted]", "[removed]"):
-            continue
+        for comment in comments:
+            if not comment.body or comment.body in ("[deleted]", "[removed]"):
+                continue
 
-        comment_data: Dict[str, Any] = {
-            "submission_id": submission.id,
-            "title": submission.title,
-            "subreddit": submission.subreddit.display_name,
-            "author": str(comment.author) if comment.author else "Unknown",
-            "body": comment.body,
-            "score": comment.score
-        }
-        comments_collected.append(comment_data)
+            comment_data: Dict[str, Any] = {
+                "submission_id": submission.id,
+                "title": submission.title,
+                "subreddit": submission.subreddit.display_name,
+                "author": str(comment.author) if comment.author else "Unknown",
+                "body": comment.body,
+                "score": comment.score
+            }
+            comments_collected.append(comment_data)
 
     return comments_collected
 
@@ -160,9 +166,13 @@ def get_posts_from_subreddit(
     return posts
 
 
+@reddit_retry
 async def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
     """
     Fetch and format a single Reddit submission by its ID.
+
+    Rate-limited via ``reddit_limiter`` (semaphore + token bucket) and
+    automatically retried with exponential back-off on 429 errors.
 
     Args:
         reddit: The asyncpraw Reddit client instance.
@@ -171,17 +181,18 @@ async def get_post_by_id(reddit, submission_id: str) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Post data dictionary.
     """
-    submission = await reddit.submission(id = submission_id)
-    return {
-        "subreddit": submission.subreddit.display_name,
-        "submission_id": submission.id,
-        "title": submission.title,
-        "body": submission.selftext,
-        "upvote_ratio": submission.upvote_ratio,
-        "score": submission.score,
-        "number_of_comments": submission.num_comments,
-        "post_url": submission.url
-    }
+    async with reddit_limiter:
+        submission = await reddit.submission(id = submission_id)
+        return {
+            "subreddit": submission.subreddit.display_name,
+            "submission_id": submission.id,
+            "title": submission.title,
+            "body": submission.selftext,
+            "upvote_ratio": submission.upvote_ratio,
+            "score": submission.score,
+            "number_of_comments": submission.num_comments,
+            "post_url": submission.url
+        }
 
 
 def evaluate_engagements(search_result, cumulated_search_results, subreddit,
@@ -405,6 +416,7 @@ def run_pipeline(pipeline, *args, **kwargs):
     return True
 
 
+@reddit_retry
 async def search_one(
     reddit,
     subreddit_name: str,
@@ -417,8 +429,11 @@ async def search_one(
     Searches a single subreddit for one query and returns posts that meet the
     configured engagement thresholds.
 
-    Intended to be scheduled as a coroutine inside asyncio.gather() so that
-    multiple subreddit/query combinations run concurrently.
+    Rate-limited via ``reddit_limiter`` (semaphore + token bucket) and
+    automatically retried with exponential back-off on 429 errors.
+
+    Intended to be scheduled as a coroutine inside ``batched_gather()`` so that
+    multiple subreddit/query combinations run in controlled concurrent batches.
 
     Args:
         reddit: The asyncpraw Reddit client instance.
@@ -438,23 +453,24 @@ async def search_one(
     logger.info(
         f"Firing Reddit API call on r/{subreddit_name} with query='{query}'")
 
-    subreddit = await reddit.subreddit(subreddit_name)
+    async with reddit_limiter:
+        subreddit = await reddit.subreddit(subreddit_name)
 
-    async for search_result in subreddit.search(
-        query,
-        sort = "hot",
-        limit = 120,
-        time_filter = "month"
-    ):
-        evaluate_engagements(
-            search_result,
-            cumulated_search_results,
-            subreddit_name,
+        async for search_result in subreddit.search(
             query,
-            min_upvote_ratio,
-            min_score,
-            min_comments
-        )
+            sort = "hot",
+            limit = 120,
+            time_filter = "month"
+        ):
+            evaluate_engagements(
+                search_result,
+                cumulated_search_results,
+                subreddit_name,
+                query,
+                min_upvote_ratio,
+                min_score,
+                min_comments
+            )
 
     if not cumulated_search_results:
         logger.warning(

@@ -24,9 +24,9 @@ class CorePipeline:
             logger.info("Executing Curator Agent...")
             response = self.service.execute_curator_agent()
 
-            if not response or "error" in response:
+            if not response or (isinstance(response, dict) and "error" in response):
                 logger.warning(
-                    "Curator agent failed to generate a brief. Stopping pipeline.")
+                    "Curator agent failed to generate a brief. Stopping pipeline.", exc_info = True)
                 return False
 
             logger.info("Storing curator response...")

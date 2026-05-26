@@ -11,6 +11,7 @@ from Agent_Backend.database.models import ValidatedPost
 from Agent_Backend.settings import settings
 from Agent_Backend.utils.helpers import search_one
 from Agent_Backend.utils.logger import logger
+from Agent_Backend.utils.rate_limiter import batched_gather, gemini_retry
 
 
 class ScoutBotService:
@@ -40,9 +41,14 @@ class ScoutBotService:
 
     async def _search_all_async(self) -> List[List[Dict]]:
         """
-        Fans out all subreddit/query combinations concurrently via asyncio.gather(),
-        then assembles results into the same nested-list structure that the rest of
-        the system expects.
+        Fans out all subreddit/query combinations via ``batched_gather()``
+        (controlled batches with inter-batch delays) rather than a raw
+        ``asyncio.gather(*all_coros)`` to prevent overwhelming Reddit's
+        rate limits.
+
+        Each individual ``search_one`` coroutine is itself decorated with
+        ``@reddit_retry`` and guarded by the ``reddit_limiter`` semaphore +
+        token-bucket, providing three layers of protection.
 
         Closes the asyncpraw client in a finally block.
 
@@ -65,7 +71,19 @@ class ScoutBotService:
                         self.min_comments
                     ))
 
-            raw_results = await asyncio.gather(*coros, return_exceptions = True)
+            logger.info(
+                f"Searching {len(coros)} subreddit/query pair(s) in batches of "
+                f"{settings.REDDIT_BATCH_SIZE} (delay: {settings.REDDIT_BATCH_DELAY}s)."
+            )
+
+            # Use batched_gather instead of asyncio.gather to avoid firing
+            # all coroutines simultaneously — the token-bucket rate limiter
+            # inside each search_one call handles per-request throttling.
+            raw_results = await batched_gather(
+                coros,
+                batch_size = settings.REDDIT_BATCH_SIZE,
+                batch_delay = settings.REDDIT_BATCH_DELAY,
+            )
 
             search_results_list = []
             for result in raw_results:
@@ -190,6 +208,9 @@ class ScoutBotService:
         Runs the Gemini agent to dynamically evaluate negative-sentiment posts
         and determine which ones describe problems solvable by software.
 
+        Quota / rate-limit errors are retried automatically with exponential
+        back-off via ``gemini_retry`` before surfacing to the caller.
+
         Returns:
             str: The agent's final summary response.
         """
@@ -200,14 +221,19 @@ class ScoutBotService:
             logger.info(
                 "Agent validate posts: starting Gemini agentic session.")
 
-            response = self.gemini.models.generate_content(
-                model = settings.SCOUT_MODEL,
-                contents = settings.AGENT_VALIDATE_POSTS_OBJECTIVE,
-                config = provide_agent_tools(
-                    tools = [self.analyze_search_results,
-                             self.store_validated_posts]
+            @gemini_retry
+            def _call_gemini():
+                """Inner wrapper so gemini_retry can target just the API call."""
+                return self.gemini.models.generate_content(
+                    model = settings.SCOUT_MODEL,
+                    contents = settings.AGENT_VALIDATE_POSTS_OBJECTIVE,
+                    config = provide_agent_tools(
+                        tools = [self.analyze_search_results,
+                                 self.store_validated_posts]
+                    )
                 )
-            )
+
+            response = _call_gemini()
 
             agent_response = response.text
             logger.info("Agent validate posts: session complete.")
@@ -221,7 +247,9 @@ class ScoutBotService:
         except errors.ClientError as e:
             if "RESOURCE_EXHAUSTED" in str(e):
                 logger.error(
-                    "Quota exceeded. Try again after reset or switch models.")
+                    "Quota exceeded and all retries exhausted. "
+                    "Try again after reset or switch models."
+                )
                 return {"error": "Quota exceeded"}
             raise
 

@@ -7,6 +7,7 @@ from Agent_Backend.repositories.validated_post_repository import ValidatedPostRe
 from Agent_Backend.settings import settings
 from Agent_Backend.utils.helpers import get_comments_from_submission, get_post_by_id
 from Agent_Backend.utils.logger import logger
+from Agent_Backend.utils.rate_limiter import batched_gather
 
 
 class IngressService:
@@ -70,7 +71,19 @@ class IngressService:
             for submission_id in submission_ids:
                 coros.append(get_post_by_id(self.reddit, submission_id))
 
-            raw_results = await asyncio.gather(*coros, return_exceptions = True)
+            logger.info(
+                f"fetch_validated_posts: fetching {len(coros)} post(s) in "
+                f"batches of {settings.REDDIT_BATCH_SIZE}."
+            )
+
+            # batched_gather keeps concurrent Reddit requests within the
+            # rate limiter's concurrency cap; get_post_by_id is individually
+            # guarded by reddit_limiter + reddit_retry.
+            raw_results = await batched_gather(
+                coros,
+                batch_size = settings.REDDIT_BATCH_SIZE,
+                batch_delay = settings.REDDIT_BATCH_DELAY,
+            )
 
             posts = []
             processed_ids = []
@@ -149,7 +162,19 @@ class IngressService:
                 )
             )
 
-        raw_results = await asyncio.gather(*coros, return_exceptions = True)
+        logger.info(
+            f"fetch_reddit_comments: fetching comments for {len(coros)} submission(s) "
+            f"in batches of {settings.REDDIT_BATCH_SIZE}."
+        )
+
+        # batched_gather keeps concurrent Reddit requests within the
+        # rate limiter's concurrency cap; get_comments_from_submission is
+        # individually guarded by reddit_limiter + reddit_retry.
+        raw_results = await batched_gather(
+            coros,
+            batch_size = settings.REDDIT_BATCH_SIZE,
+            batch_delay = settings.REDDIT_BATCH_DELAY,
+        )
 
         comments_collected = []
 
