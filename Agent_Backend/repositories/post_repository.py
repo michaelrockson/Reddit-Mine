@@ -1,8 +1,7 @@
 from typing import List, Dict, Set
 
+from database.models import Post, CuratedItem
 from sqlalchemy.orm import Session
-
-from Agent_Backend.database.models import Post, CuratedItem
 
 
 class PostRepository:
@@ -56,7 +55,7 @@ class PostRepository:
         """
         Query posts that have not been curated yet, joined with their sentiments.
         """
-        from Agent_Backend.database.models import Sentiment
+        from database.models import Sentiment
         return (
             self.session.query(Post, Sentiment)
             .join(Sentiment, Sentiment.post_id == Post.submission_id)

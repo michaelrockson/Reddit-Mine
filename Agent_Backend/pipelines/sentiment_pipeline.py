@@ -1,5 +1,5 @@
-from Agent_Backend.services.sentiment_service import SentimentService
-from Agent_Backend.utils.logger import logger
+from services.sentiment_service import SentimentService
+from utils.logger import logger
 
 
 class SentimentPipeline:

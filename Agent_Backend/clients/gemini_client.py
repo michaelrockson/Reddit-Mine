@@ -1,8 +1,7 @@
+from settings import settings
+from utils.logger import logger
 from google import genai
 from google.genai import types
-
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.logger import logger
 
 _gemini_instance = None
 

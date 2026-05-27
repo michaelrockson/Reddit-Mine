@@ -1,5 +1,5 @@
-from Agent_Backend.services.scout_bot_service import ScoutBotService
-from Agent_Backend.utils.logger import logger
+from services.scout_bot_service import ScoutBotService
+from utils.logger import logger
 
 
 class ScoutBotPipeline:

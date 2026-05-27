@@ -1,5 +1,5 @@
-from Agent_Backend.services.reddit_service import RedditService
-from Agent_Backend.utils.logger import logger
+from services.reddit_service import RedditService
+from utils.logger import logger
 
 
 class IngressPipeline:

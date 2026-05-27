@@ -1,15 +1,15 @@
 from typing import Dict, List
 
+from clients.gemini_client import initialize_gemini, \
+    provide_agent_tools
+from database import get_session
+from repositories.brief_repository import BriefRepository
+from repositories.post_repository import PostRepository
+from repositories.sentiment_repository import SentimentRepository
+from settings import settings
+from utils.logger import logger
+from utils.rate_limiter import gemini_retry
 from google.genai import errors
-
-from Agent_Backend.clients.gemini_client import initialize_gemini, provide_agent_tools
-from Agent_Backend.database import get_session
-from Agent_Backend.repositories.brief_repository import BriefRepository
-from Agent_Backend.repositories.post_repository import PostRepository
-from Agent_Backend.repositories.sentiment_repository import SentimentRepository
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.logger import logger
-from Agent_Backend.utils.rate_limiter import gemini_retry
 
 
 class CoreService:
@@ -85,6 +85,7 @@ class CoreService:
                     config = provide_agent_tools(
                         tools = [self.query_posts_with_sentiments])
                 )
+
 
             response = _call_gemini()
 

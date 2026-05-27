@@ -1,8 +1,7 @@
 from typing import List, Dict
 
+from database.models import Sentiment
 from sqlalchemy.orm import Session
-
-from Agent_Backend.database.models import Sentiment
 
 
 class SentimentRepository:

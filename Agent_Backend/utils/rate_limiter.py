@@ -3,6 +3,8 @@ import random
 import time
 from typing import Any, Coroutine, List
 
+from settings import settings
+from utils.logger import logger
 from tenacity import (
     RetryCallState,
     retry,
@@ -10,9 +12,6 @@ from tenacity import (
     stop_after_attempt,
     wait_exponential_jitter,
 )
-
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.logger import logger
 
 
 class AsyncRateLimiter:
@@ -24,7 +23,8 @@ class AsyncRateLimiter:
     """
 
 
-    def __init__(self, max_rate: int, period: float = 60.0, max_concurrency: int = 5) -> None:
+    def __init__(self, max_rate: int, period: float = 60.0,
+                 max_concurrency: int = 5) -> None:
         self.max_rate = max_rate
         self.period = period
         self._semaphore = asyncio.Semaphore(max_concurrency)
@@ -36,7 +36,8 @@ class AsyncRateLimiter:
     async def _refill(self) -> None:
         now = time.monotonic()
         elapsed = now - self._last_refill
-        self._tokens = min(float(self.max_rate), self._tokens + (elapsed / self.period) * self.max_rate)
+        self._tokens = min(float(self.max_rate), self._tokens + (
+                elapsed / self.period) * self.max_rate)
         self._last_refill = now
 
 

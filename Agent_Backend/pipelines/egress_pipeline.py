@@ -1,7 +1,7 @@
-from Agent_Backend.services.egress_service import EgressService
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.helpers import send_by_channel
-from Agent_Backend.utils.logger import logger
+from services.egress_service import EgressService
+from settings import settings
+from utils.helpers import send_by_channel
+from utils.logger import logger
 
 
 class EgressPipeline:

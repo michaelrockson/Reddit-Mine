@@ -1,14 +1,14 @@
-from Agent_Backend.database import get_session
-from Agent_Backend.database.init_db import init_db
-from Agent_Backend.pipelines.core_pipeline import CorePipeline
-from Agent_Backend.pipelines.egress_pipeline import EgressPipeline
-from Agent_Backend.pipelines.ingress_pipeline import IngressPipeline
-from Agent_Backend.pipelines.scout_pipeline import ScoutBotPipeline
-from Agent_Backend.pipelines.sentiment_pipeline import SentimentPipeline
-from Agent_Backend.repositories.post_repository import PostRepository
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.helpers import run_pipeline
-from Agent_Backend.utils.logger import logger
+from database import get_session
+from database.init_db import init_db
+from pipelines.core_pipeline import CorePipeline
+from pipelines.egress_pipeline import EgressPipeline
+from pipelines.ingress_pipeline import IngressPipeline
+from pipelines.scout_pipeline import ScoutBotPipeline
+from pipelines.sentiment_pipeline import SentimentPipeline
+from repositories.post_repository import PostRepository
+from settings import settings
+from utils.helpers import run_pipeline
+from utils.logger import logger
 
 
 class JobService:

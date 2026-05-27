@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from Agent_Backend.settings import settings
+from settings import settings
 
 # ==============================================================================
 # Database Configuration
@@ -25,6 +25,6 @@ def get_session():
 
 
 # Imported models at the end to avoid circular dependencies
-from Agent_Backend.database import models
+from database import models
 
 __all__ = ["database_engine", "SessionLocal", "Base", "get_session", "models"]

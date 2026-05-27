@@ -1,7 +1,7 @@
 from typing import List
 
-from Agent_Backend.database import get_session
-from Agent_Backend.database.models import ValidatedPost
+from database import get_session
+from database.models import ValidatedPost
 
 
 class ValidatedPostRepository:

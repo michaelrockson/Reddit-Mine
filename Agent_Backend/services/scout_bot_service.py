@@ -1,17 +1,18 @@
 import asyncio
 from typing import List, Dict
 
+from clients.gemini_client import initialize_gemini, \
+    provide_agent_tools
+from clients.reddit_client import get_reddit_client, \
+    close_reddit_client
+from database import get_session
+from database.models import ValidatedPost
+from settings import settings
+from utils.helpers import search_one
+from utils.logger import logger
+from utils.rate_limiter import batched_gather, gemini_retry
 from google.genai import errors
 from nltk.sentiment import SentimentIntensityAnalyzer
-
-from Agent_Backend.clients.gemini_client import initialize_gemini, provide_agent_tools
-from Agent_Backend.clients.reddit_client import get_reddit_client, close_reddit_client
-from Agent_Backend.database import get_session
-from Agent_Backend.database.models import ValidatedPost
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.helpers import search_one
-from Agent_Backend.utils.logger import logger
-from Agent_Backend.utils.rate_limiter import batched_gather, gemini_retry
 
 
 class ScoutBotService:
@@ -188,7 +189,8 @@ class ScoutBotService:
                     f"truncating to {settings.MAX_SCOUT_RESULTS} to stay within "
                     f"free-tier token limits."
                 )
-                sentiment_collection = sentiment_collection[:settings.MAX_SCOUT_RESULTS]
+                sentiment_collection = sentiment_collection[
+                    :settings.MAX_SCOUT_RESULTS]
 
             logger.info(
                 f"Analysis complete. {len(sentiment_collection)} negative posts retained "
@@ -221,6 +223,7 @@ class ScoutBotService:
             logger.info(
                 "Agent validate posts: starting Gemini agentic session.")
 
+
             @gemini_retry
             def _call_gemini():
                 """Inner wrapper so gemini_retry can target just the API call."""
@@ -232,6 +235,7 @@ class ScoutBotService:
                                  self.store_validated_posts]
                     )
                 )
+
 
             response = _call_gemini()
 
