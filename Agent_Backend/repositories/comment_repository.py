@@ -1,8 +1,7 @@
 from typing import List, Dict
 
+from database.models import Comment
 from sqlalchemy.orm import Session
-
-from Agent_Backend.database.models import Comment
 
 
 class CommentRepository:

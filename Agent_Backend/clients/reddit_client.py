@@ -1,10 +1,9 @@
 import asyncio
 
 import asyncpraw
+from settings import settings
+from utils.logger import logger
 from dotenv import load_dotenv
-
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.logger import logger
 
 _reddit_instance = None
 _reddit_lock = None

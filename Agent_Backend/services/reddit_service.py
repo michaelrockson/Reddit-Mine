@@ -1,13 +1,13 @@
 import asyncio
 from typing import Dict, Any
 
-from Agent_Backend.clients.reddit_client import close_reddit_client
-from Agent_Backend.database import get_session
-from Agent_Backend.repositories.comment_repository import CommentRepository
-from Agent_Backend.repositories.post_repository import PostRepository
-from Agent_Backend.services.ingress_service import IngressService
-from Agent_Backend.utils.helpers import ensure_data_integrity
-from Agent_Backend.utils.logger import logger
+from clients.reddit_client import close_reddit_client
+from database import get_session
+from repositories.comment_repository import CommentRepository
+from repositories.post_repository import PostRepository
+from services.ingress_service import IngressService
+from utils.helpers import ensure_data_integrity
+from utils.logger import logger
 
 
 class RedditService:

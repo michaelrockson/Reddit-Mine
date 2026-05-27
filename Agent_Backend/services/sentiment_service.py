@@ -2,13 +2,12 @@ from collections import Counter
 from typing import Dict, List
 
 import nltk
+from database import get_session
+from repositories.post_repository import PostRepository
+from repositories.sentiment_repository import SentimentRepository
+from utils.helpers import serialize_post, get_comments_for_post
+from utils.logger import logger
 from nltk.sentiment import SentimentIntensityAnalyzer
-
-from Agent_Backend.database import get_session
-from Agent_Backend.repositories.post_repository import PostRepository
-from Agent_Backend.repositories.sentiment_repository import SentimentRepository
-from Agent_Backend.utils.helpers import serialize_post, get_comments_for_post
-from Agent_Backend.utils.logger import logger
 
 
 class SentimentService:
@@ -87,7 +86,8 @@ class SentimentService:
             logger.info("Querying posts for analysis")
             self.query_posts_with_comments()
 
-        logger.info(f"Analyzing sentiment for {len(self.query_results)} post(s)")
+        logger.info(
+            f"Analyzing sentiment for {len(self.query_results)} post(s)")
 
         try:
             for posts in self.query_results:

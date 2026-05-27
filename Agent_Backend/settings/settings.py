@@ -2,10 +2,9 @@ import os
 import sys
 from typing import List
 
+from services.infisical_service import InfisicalSecretsService
+from utils.logger import logger
 from dotenv import load_dotenv
-
-from Agent_Backend.services.infisical_service import InfisicalSecretsService
-from Agent_Backend.utils.logger import logger
 
 load_dotenv()
 
@@ -217,11 +216,11 @@ Output:
 # =====================================================
 # RATE LIMITING CONFIGURATION
 # =====================================================
-REDDIT_MAX_REQUESTS_PER_MIN: int = 55   # stay 5 below Reddit's 60 rpm limit
-REDDIT_MAX_CONCURRENCY: int = 5         # max simultaneous in-flight Reddit requests
-REDDIT_BATCH_SIZE: int = 5              # coroutines per batched_gather batch
-REDDIT_BATCH_DELAY: float = 1.5         # seconds to sleep between batches
-REDDIT_MAX_RETRIES: int = 5             # max tenacity retry attempts on a 429
-GEMINI_MAX_REQUESTS_PER_MIN: int = 10   # req/min cap for Gemini API
-GEMINI_MAX_CONCURRENCY: int = 2         # max simultaneous in-flight Gemini requests
-GEMINI_MAX_RETRIES: int = 4             # max tenacity retry attempts on quota error
+REDDIT_MAX_REQUESTS_PER_MIN: int = 55  # stay 5 below Reddit's 60 rpm limit
+REDDIT_MAX_CONCURRENCY: int = 5  # max simultaneous in-flight Reddit requests
+REDDIT_BATCH_SIZE: int = 5  # coroutines per batched_gather batch
+REDDIT_BATCH_DELAY: float = 1.5  # seconds to sleep between batches
+REDDIT_MAX_RETRIES: int = 5  # max tenacity retry attempts on a 429
+GEMINI_MAX_REQUESTS_PER_MIN: int = 10  # req/min cap for Gemini API
+GEMINI_MAX_CONCURRENCY: int = 2  # max simultaneous in-flight Gemini requests
+GEMINI_MAX_RETRIES: int = 4  # max tenacity retry attempts on quota error

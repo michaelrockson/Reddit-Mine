@@ -12,4 +12,3 @@ if not logger.handlers:
                                   "%H:%M:%S")
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-

@@ -1,5 +1,5 @@
-from Agent_Backend.database import Base, database_engine
-from Agent_Backend.utils.logger import logger
+from database import Base, database_engine
+from utils.logger import logger
 
 
 def init_db():

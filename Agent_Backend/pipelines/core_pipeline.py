@@ -1,5 +1,5 @@
-from Agent_Backend.services.core_service import CoreService
-from Agent_Backend.utils.logger import logger
+from services.core_service import CoreService
+from utils.logger import logger
 
 
 class CorePipeline:
@@ -24,9 +24,11 @@ class CorePipeline:
             logger.info("Executing Curator Agent...")
             response = self.service.execute_curator_agent()
 
-            if not response or (isinstance(response, dict) and "error" in response):
+            if not response or (
+                isinstance(response, dict) and "error" in response):
                 logger.warning(
-                    "Curator agent failed to generate a brief. Stopping pipeline.", exc_info = True)
+                    "Curator agent failed to generate a brief. Stopping pipeline.",
+                    exc_info = True)
                 return False
 
             logger.info("Storing curator response...")

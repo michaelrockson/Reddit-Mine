@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, \
     Boolean, JSON, DateTime
 from sqlalchemy.orm import relationship
 
-from Agent_Backend.database import Base
+from database import Base
 
 
 class Post(Base):

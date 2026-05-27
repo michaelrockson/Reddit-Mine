@@ -4,14 +4,14 @@ from pathlib import Path
 from smtplib import SMTPAuthenticationError, SMTPConnectError
 from typing import List, Dict
 
+from database import get_session
+from repositories.brief_repository import BriefRepository
+from settings import settings
+from utils.helpers import chunk_text, create_notion_blocks, \
+    format_email
+from utils.logger import logger
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from notion_client import APIErrorCode, APIResponseError, Client
-
-from Agent_Backend.database import get_session
-from Agent_Backend.repositories.brief_repository import BriefRepository
-from Agent_Backend.settings import settings
-from Agent_Backend.utils.helpers import chunk_text, create_notion_blocks, format_email
-from Agent_Backend.utils.logger import logger
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = BASE_DIR / "utils" / "templates"
