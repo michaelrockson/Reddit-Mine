@@ -1,4 +1,4 @@
-import LoginPage from "./layouts/LoginLayout.tsx";
+import LoginPage from "./pages/Login/LoginPage.tsx";
 
 
 export default function App() {

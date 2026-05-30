@@ -1,4 +1,4 @@
-import LoginForm from "../pages/Login/LoginForm.tsx";
+import LoginForm from "./components/LoginForm.tsx";
 import React from "react";
 
 

@@ -29,7 +29,7 @@ export default function LoginForm(): React.JSX.Element {
                 </div>
 
                 <div className="li-flex li-flex-col li-mt-lg">
-                    <button type="submit" className="li-btn li-btn-primary li-btn-lg li-w-full">Continue with Email...</button>
+                    <button type="submit" className="li-btn li-btn-primary li-btn-lg li-w-full">Login In</button>
                     <button type="submit" className="li-btn li-btn-secondary li-btn-lg li-w-full">Sign In as Guest</button>
                 </div>
 
