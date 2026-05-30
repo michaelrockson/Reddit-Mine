@@ -6,8 +6,6 @@ The backend collects Reddit discussions, performs sentiment analysis, validates 
 
 Results can be persisted to a database and optionally exported to services such as Notion.
 
----
-
 # Getting Started
 
 These instructions will give you a copy of the project up and running on your local machine for development purposes.
