@@ -99,6 +99,14 @@
     grid-template-columns: repeat(12, 1fr);
 }
 
+.li-grid-dashboard {
+    grid-template-columns: 1fr 5fr;
+}
+
+.li-grid-take-5 {
+    grid-template-columns: 2fr 1fr;
+}
+
 .li-gap-sm {
     gap: var(--li-space-2);
 }
