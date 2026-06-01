@@ -1,4 +1,4 @@
-export default function NavBar() {
+export default function HeaderBar() {
   return (
     <header className="li-border-b li-navbar">
       <div className="li-container">
