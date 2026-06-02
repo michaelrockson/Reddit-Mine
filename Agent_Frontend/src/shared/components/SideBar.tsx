@@ -16,8 +16,11 @@ export default function SideBar() {
         <p className="li-sidebar-group-title">MAIN MENU</p>
         <ul className="li-flex-lg li-flex-col li-container li-sidebar-item">
           {sideBarNavs.map((nav) => (
-            <li>
-              <a>{nav.navLabel}</a>
+            <li key={nav.id}>
+              <a>
+                {nav.icon && <nav.icon />}
+                {nav.navLabel}
+              </a>
             </li>
           ))}
         </ul>
