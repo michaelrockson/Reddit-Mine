@@ -7,19 +7,11 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
-
-const pipelineData: {
-  pipeline: string;
-  runs: number;
-}[] = [
-  { pipeline: "Scout", runs: 62 },
-  { pipeline: "Ingress", runs: 82 },
-  { pipeline: "Sentiment", runs: 62 },
-  { pipeline: "Core", runs: 76 },
-  { pipeline: "Egress", runs: 15 },
-];
+import {useDashboardHexChart} from "../hooks/useDashboardHexChart.tsx";
 
 export default function DashboardHexChart(): React.JSX.Element {
+  const {pipelineData} = useDashboardHexChart();
+
   return (
     <div className="li-card li-hover-lift">
       <h3 className="li-mb-md">Pipeline Activity</h3>

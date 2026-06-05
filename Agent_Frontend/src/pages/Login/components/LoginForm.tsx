@@ -1,5 +1,5 @@
 import React from "react";
-import { useLoginForm } from "../../../hooks/useLoginForm.tsx";
+import { useLoginForm } from "../hooks/useLoginForm.tsx";
 
 export default function LoginForm(): React.JSX.Element {
   const { email, password, handleEmailChange, handlePasswordChange, signIn } =
@@ -66,12 +66,6 @@ export default function LoginForm(): React.JSX.Element {
             className="li-btn li-btn-secondary li-btn-lg li-w-full"
           >
             Sign In as Guest
-          </button>
-          <button
-            type="button"
-            className="li-btn li-btn-secondary li-btn-lg li-w-full"
-          >
-            Continue with Google
           </button>
         </div>
 

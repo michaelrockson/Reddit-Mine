@@ -1,5 +1,5 @@
 import React from "react";
-import type { AnalyticsCardsPayload } from "../../../hooks/useDashboardOverviewCards.tsx";
+import type { AnalyticsCardsPayload } from "../hooks/useDashboardOverviewCards.tsx";
 
 export default function DashboardAnalyticsCard({
   Tag,

@@ -1,6 +1,6 @@
 import React from "react";
 import DashboardAnalyticsCard from "./DashboardAnalyticsCard.tsx";
-import { useDashboardOverviewCards } from "../../../hooks/useDashboardOverviewCards.tsx";
+import { useDashboardOverviewCards } from "../hooks/useDashboardOverviewCards.tsx";
 
 export default function DashboardOverviewCards(): React.JSX.Element {
   const { cardData } = useDashboardOverviewCards();
