@@ -9,19 +9,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-const agentData = [
-  { month: "Jan", runs: 45 },
-  { month: "Feb", runs: 60 },
-  { month: "March", runs: 72 },
-  { month: "April", runs: 14 },
-  { month: "May", runs: 35 },
-  { month: "June", runs: 92 },
-  { month: "July", runs: 140 },
-  { month: "August", runs: 45 },
-];
+import { useDashboardLineChart } from "../hooks/useDashboardLineChart.tsx";
 
 export default function DashboardLineChart(): React.JSX.Element {
+  const { agentData } = useDashboardLineChart();
+
   return (
     <div className="li-card li-hover-lift">
       <div className="li-flex li-justify-between li-mb-md">
