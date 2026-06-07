@@ -32,8 +32,8 @@ Optional:
 Clone the repository:
 
 ```bash
-git clone https://github.com/michaelrockson/reddit-mine.git
-cd reddit-mine
+git clone https://github.com/michaelrockson/Reddit-Mine.git
+cd Reddit-Mine
 ```
 
 The project consists of two primary components:
