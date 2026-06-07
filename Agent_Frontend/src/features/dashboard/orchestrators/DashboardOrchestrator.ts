@@ -1,4 +1,4 @@
-import { dashboardService } from "../../../services/DashboardService.ts";
+import { dashboardService } from "../services/DashboardService.ts";
 import type { DashboardData } from "../models/DashboardModels.ts";
 
 export async function fetchDashboardData(): Promise<DashboardData> {

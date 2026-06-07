@@ -4,7 +4,7 @@ import type {
   httpMethod,
   PipelinePayload,
   Record,
-} from "../features/dashboard/models/DashboardModels.ts";
+} from "../models/DashboardModels.ts";
 
 class DashboardService {
   private readonly baseUrl: string;

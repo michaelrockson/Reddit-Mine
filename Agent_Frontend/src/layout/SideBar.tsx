@@ -1,4 +1,4 @@
-import { useSideBar } from "../../hooks/useSideBar.tsx";
+import { useSideBar } from "./hooks/useSideBar.tsx";
 
 export default function SideBar() {
   const { sideBarNavs } = useSideBar();

@@ -3,7 +3,6 @@ import React from "react";
 export default function LoadingScreen(): React.JSX.Element {
   return (
     <section className="li-section-sm li-px-lg li-animate-fade-in">
-      {/* Greeting skeleton */}
       <div
         className="li-flex li-items-center"
         style={{
