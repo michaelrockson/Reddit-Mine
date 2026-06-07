@@ -1,5 +1,5 @@
 import React from "react";
-import { MdTrendingUp, MdTrendingDown, MdTrendingFlat } from "react-icons/md";
+import { MdTrendingDown, MdTrendingFlat, MdTrendingUp } from "react-icons/md";
 import type {
   AnalyticsCardsPayload,
   AnalyticsCardVariant,

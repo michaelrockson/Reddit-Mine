@@ -13,6 +13,34 @@ class DashboardService {
     this.baseUrl = "http://localhost:8000";
   }
 
+  getAnalyticsCardData() {
+    return this.request<{ AnalyticsCards: AnalyticsCardsPayload[] }>(
+      "/dashboard/analytics/card",
+      "GET",
+    );
+  }
+
+  getPipelineData() {
+    return this.request<{ PipelinePayload: PipelinePayload[] }>(
+      "/dashboard/chart/agent/pipeline",
+      "GET",
+    );
+  }
+
+  getAgentRecords() {
+    return this.request<{ AgentRecordsPayload: Record[] }>(
+      "/dashboard/recents/agent/records",
+      "GET",
+    );
+  }
+
+  getLineChartData() {
+    return this.request<{ AgentRunPayload: AgentPayload[] }>(
+      "/dashboard/chart/agent/runs",
+      "GET",
+    );
+  }
+
   private async request<T>(
     endpoint: string,
     requestMethod: httpMethod,
@@ -26,22 +54,6 @@ class DashboardService {
     if (!serverResponse.ok) throw new Error(`${serverResponse.status}`);
 
     return (await serverResponse.json()) as Promise<T>;
-  }
-
-  getAnalyticsCardData() {
-    return this.request<{ AnalyticsCards: AnalyticsCardsPayload[] }>("/dashboard/analytics/card", "GET");
-  }
-
-  getPipelineData() {
-    return this.request<{ PipelinePayload: PipelinePayload[] }>("/dashboard/chart/agent/pipeline", "GET");
-  }
-
-  getAgentRecords() {
-    return this.request<{ AgentRecordsPayload: Record[] }>("/dashboard/recents/agent/records", "GET");
-  }
-
-  getLineChartData() {
-    return this.request<{ AgentRunPayload: AgentPayload[] }>("/dashboard/chart/agent/runs", "GET");
   }
 }
 

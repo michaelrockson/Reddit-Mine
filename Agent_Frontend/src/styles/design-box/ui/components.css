@@ -44,8 +44,12 @@
 }
 
 @keyframes li-pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.35; }
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
 }
 
 .li-header-search-wrap {
@@ -966,11 +970,21 @@ ul.li-sidebar-item li.active a::before {
 }
 
 @keyframes li-wave {
-    0%, 60%, 100% { transform: rotate(0deg); }
-    10%, 30%      { transform: rotate(18deg); }
-    20%           { transform: rotate(-8deg); }
-    40%           { transform: rotate(10deg); }
-    50%           { transform: rotate(-4deg); }
+    0%, 60%, 100% {
+        transform: rotate(0deg);
+    }
+    10%, 30% {
+        transform: rotate(18deg);
+    }
+    20% {
+        transform: rotate(-8deg);
+    }
+    40% {
+        transform: rotate(10deg);
+    }
+    50% {
+        transform: rotate(-4deg);
+    }
 }
 
 .li-greeting-sub {
@@ -1202,10 +1216,10 @@ ul.li-sidebar-item li.active a::before {
 
 .li-skeleton {
     background: linear-gradient(
-        90deg,
-        var(--li-bg-card) 0%,
-        var(--li-bg-surface-soft) 50%,
-        var(--li-bg-card) 100%
+            90deg,
+            var(--li-bg-card) 0%,
+            var(--li-bg-surface-soft) 50%,
+            var(--li-bg-card) 100%
     );
     background-size: 200% 100%;
     animation: li-shimmer 1.6s ease-in-out infinite;
