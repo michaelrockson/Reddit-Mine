@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MdBarChart, MdDashboard, MdSettings } from "react-icons/md";
-import { FaReddit } from "react-icons/fa";
 import { IoMdFunnel } from "react-icons/io";
 import type { SideBarNavItems } from "../models/NavigationTypes.ts";
 
@@ -12,21 +11,16 @@ const navItems: SideBarNavItems[] = [
   },
   {
     id: 1,
-    navLabel: "Active Subreddits",
-    icon: FaReddit,
-  },
-  {
-    id: 2,
     navLabel: "Painpoint Pipelines",
     icon: IoMdFunnel,
   },
   {
-    id: 3,
+    id: 2,
     navLabel: "Reports & Analysis",
     icon: MdBarChart,
   },
   {
-    id: 4,
+    id: 3,
     navLabel: "Agent Settings",
     icon: MdSettings,
   },

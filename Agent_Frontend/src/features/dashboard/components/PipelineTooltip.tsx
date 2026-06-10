@@ -12,7 +12,7 @@ export default function PipelineTooltip({
         <span>
           <span
             className="li-chart-tooltip-dot"
-            style={{ background: "#ff4500" }}
+            style={{ background: "#35464f" }}
           />
           Runs
         </span>

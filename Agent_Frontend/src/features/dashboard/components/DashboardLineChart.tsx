@@ -91,14 +91,14 @@ export default function DashboardLineChart({
           <Area
             type="monotone"
             dataKey="runs"
-            stroke="#ff6a33"
+            stroke="#808080"
             strokeWidth={2}
-            fill="#ff4500"
-            fillOpacity={0.18}
+            fill="#d3d3d3"
+            fillOpacity={0.12}
             dot={false}
             activeDot={{
               r: 5,
-              fill: "#ff6a33",
+              fill: "#808080",
               stroke: "#e0e6ec",
               strokeWidth: 2,
             }}

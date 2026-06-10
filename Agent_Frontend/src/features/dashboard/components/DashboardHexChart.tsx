@@ -66,11 +66,11 @@ export default function DashboardHexChart({
           <PolarRadiusAxis tick={false} axisLine={false} domain={[0, 100]} />
           <Radar
             dataKey="runs"
-            stroke="#ff6a33"
-            strokeWidth={2}
-            fill="#ff4500"
+            stroke="#808080"
+            strokeWidth={1.5}
+            fill="#808080"
             fillOpacity={0.18}
-            dot={{ fill: "#ff6a33", r: 3, strokeWidth: 0 }}
+            dot={{ fill: "#808080", r: 3, strokeWidth: 0 }}
           />
           <Tooltip content={<PipelineTooltip />} />
         </RadarChart>

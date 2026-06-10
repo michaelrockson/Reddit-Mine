@@ -1,4 +1,3 @@
-from aiohttp import Payload
 from fastapi import APIRouter, HTTPException
 
 from api.models.dashboard_models import AnalyticsCardsStruct, \
@@ -50,11 +49,11 @@ def get_analytics_info():
 def get_pipeline_info():
     try:
         payload: list[PipelineDataStruct] = [
-            PipelineDataStruct(pipeline = "Scout", runs = 32),
+            PipelineDataStruct(pipeline = "Scout", runs = 92),
             PipelineDataStruct(pipeline = "Ingress", runs = 67),
-            PipelineDataStruct(pipeline = "Sentiment", runs = 28),
+            PipelineDataStruct(pipeline = "Sentiment", runs = 53),
             PipelineDataStruct(pipeline = "Core", runs = 42),
-            PipelineDataStruct(pipeline = "Egress", runs = 24),
+            PipelineDataStruct(pipeline = "Egress", runs = 76),
         ]
         return {"PipelinePayload": payload, "status_code": 200}
     except Exception as e:
@@ -70,9 +69,7 @@ def get_runs_info():
             AgentRunStruct(month = "March", runs = 43),
             AgentRunStruct(month = "April", runs = 72),
             AgentRunStruct(month = "May", runs = 56),
-            AgentRunStruct(month = "June", runs = 89),
-            AgentRunStruct(month = "July", runs = 52),
-            AgentRunStruct(month = "August", runs = 28),
+            AgentRunStruct(month = "June", runs = 89)
         ]
         return {"AgentRunPayload": payload, "status_code": 200}
     except Exception as e:
