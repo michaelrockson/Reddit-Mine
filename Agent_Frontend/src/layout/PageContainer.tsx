@@ -1,16 +1,16 @@
 import React from "react";
 import HeaderBar from "./HeaderBar.tsx";
 import SideBar from "./SideBar.tsx";
-import DashboardPage from "../pages/DashboardPage.tsx";
+import { Outlet } from "react-router-dom";
 
 export default function PageContainer(): React.JSX.Element {
   return (
     <>
       <section className="li-grid li-grid-default-layout">
         <SideBar />
-        <div>
+        <div className="li-flex li-flex-col li-h-full">
           <HeaderBar />
-          <DashboardPage />
+          <Outlet />
         </div>
       </section>
     </>
