@@ -203,7 +203,6 @@
 /* --- Cards --- */
 
 .li-card {
-    background: linear-gradient(145deg, var(--li-bg-card), rgba(28, 29, 31, 0.2));
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--li-border-default);
@@ -211,7 +210,7 @@
     border-radius: var(--li-radius-lg);
     padding: var(--li-space-8);
     overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease;
+    background-color: var(--li-bg-surface);
 }
 
 .li-card-header {
@@ -1101,7 +1100,7 @@ ul.li-sidebar-item li.active a::before {
 /* --- Chart Tooltip --- */
 
 .li-chart-tooltip {
-    background: var(--li-bg-card);
+    background: var(--li-bg-surface);
     border: 1px solid var(--li-border-default);
     border-radius: var(--li-radius-md);
     padding: var(--li-space-sm) var(--li-space-md);
@@ -1183,6 +1182,15 @@ ul.li-sidebar-item li.active a::before {
 }
 
 /* --- Empty State --- */
+.li-empty-state-card {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px dashed var(--li-border-default);
+    box-shadow: var(--li-shadow-inner), var(--li-shadow-sm);
+    border-radius: var(--li-radius-lg);
+    padding: var(--li-space-8);
+    overflow: hidden;
+}
 
 .li-empty-state {
     display: flex;

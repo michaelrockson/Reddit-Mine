@@ -14,6 +14,7 @@ import type {
 } from "../models/DashboardModels.ts";
 import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
 import AgentActivityTooltip from "./AgentActivityTooltip.tsx";
+import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
 
 const AXIS_STYLE = {
   fontSize: 12,
@@ -26,8 +27,22 @@ export default function DashboardLineChart({
 }: DashboardLineChartProps): React.JSX.Element {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("6months");
 
+  if (!agentData?.length) {
+    return (
+      <div className="li-card">
+        <div className="li-flex li-justify-between li-items-center li-mb-md">
+          <div>
+            <h3 style={{ marginBottom: 2 }}>Agent Activity</h3>
+            <p className="li-text-xs li-text-muted">Run frequency over time</p>
+          </div>
+        </div>
+        <EmptyDataState />
+      </div>
+    );
+  }
+
   return (
-    <div className="li-card li-hover-lift">
+    <div className="li-card">
       <div className="li-flex li-justify-between li-items-center li-mb-md">
         <div>
           <h3 style={{ marginBottom: 2 }}>Agent Activity</h3>
@@ -77,7 +92,7 @@ export default function DashboardLineChart({
             type="monotone"
             dataKey="runs"
             stroke="#ff6a33"
-            strokeWidth={2.5}
+            strokeWidth={2}
             fill="#ff4500"
             fillOpacity={0.18}
             dot={false}
