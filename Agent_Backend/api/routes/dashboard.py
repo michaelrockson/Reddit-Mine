@@ -1,3 +1,4 @@
+from aiohttp import Payload
 from fastapi import APIRouter, HTTPException
 
 from api.models.dashboard_models import AnalyticsCardsStruct, \
@@ -17,15 +18,13 @@ def get_analytics_info():
                 data = 92,
                 trend = 4.2,
                 trendDirection = "up",
-                variant = "success",
             ),
             AnalyticsCardsStruct(
                 id = 1,
-                tag = "Agent Runs",
+                tag = "Active Subreddits",
                 data = 16,
                 trend = 12.5,
                 trendDirection = "up",
-                variant = "brand",
             ),
             AnalyticsCardsStruct(
                 id = 2,
@@ -33,7 +32,6 @@ def get_analytics_info():
                 data = 45,
                 trend = 3.1,
                 trendDirection = "down",
-                variant = "warning",
             ),
             AnalyticsCardsStruct(
                 id = 3,
@@ -41,7 +39,6 @@ def get_analytics_info():
                 data = 4,
                 trend = 0.0,
                 trendDirection = "neutral",
-                variant = "info",
             ),
         ]
         return {"AnalyticsCards": payload, "status_code": 200}
@@ -53,10 +50,10 @@ def get_analytics_info():
 def get_pipeline_info():
     try:
         payload: list[PipelineDataStruct] = [
-            PipelineDataStruct(pipeline = "Scout", runs = 78),
-            PipelineDataStruct(pipeline = "Ingress", runs = 82),
-            PipelineDataStruct(pipeline = "Sentiment", runs = 62),
-            PipelineDataStruct(pipeline = "Core", runs = 62),
+            PipelineDataStruct(pipeline = "Scout", runs = 32),
+            PipelineDataStruct(pipeline = "Ingress", runs = 67),
+            PipelineDataStruct(pipeline = "Sentiment", runs = 28),
+            PipelineDataStruct(pipeline = "Core", runs = 42),
             PipelineDataStruct(pipeline = "Egress", runs = 24),
         ]
         return {"PipelinePayload": payload, "status_code": 200}
@@ -71,11 +68,11 @@ def get_runs_info():
             AgentRunStruct(month = "January", runs = 34),
             AgentRunStruct(month = "February", runs = 60),
             AgentRunStruct(month = "March", runs = 43),
-            AgentRunStruct(month = "April", runs = 52),
-            AgentRunStruct(month = "May", runs = 35),
-            AgentRunStruct(month = "June", runs = 62),
-            AgentRunStruct(month = "July", runs = 92),
-            AgentRunStruct(month = "August", runs = 65),
+            AgentRunStruct(month = "April", runs = 72),
+            AgentRunStruct(month = "May", runs = 56),
+            AgentRunStruct(month = "June", runs = 89),
+            AgentRunStruct(month = "July", runs = 52),
+            AgentRunStruct(month = "August", runs = 28),
         ]
         return {"AgentRunPayload": payload, "status_code": 200}
     except Exception as e:

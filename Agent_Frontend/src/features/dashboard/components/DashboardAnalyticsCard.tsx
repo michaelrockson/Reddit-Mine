@@ -1,27 +1,12 @@
 import React from "react";
-import type {
-  AnalyticsCardsPayload,
-  AnalyticsCardVariant,
-} from "../models/DashboardModels.ts";
-
-const variantIconBoxClass: Record<NonNullable<AnalyticsCardVariant>, string> = {
-  info: "li-card-icon-box-info",
-  success: "li-card-icon-box-success",
-  warning: "li-card-icon-box-warning",
-  error: "li-card-icon-box-error",
-  brand: "li-card-icon-box-brand",
-};
+import type { AnalyticsCardsPayload } from "../models/DashboardModels.ts";
 
 export default function DashboardAnalyticsCard({
   tag,
   data,
   trend,
   trendDirection = "neutral",
-  variant = "brand",
-  icon: Icon,
 }: AnalyticsCardsPayload): React.JSX.Element {
-  const iconBoxClass = variantIconBoxClass[variant];
-
   const trendClass =
     trendDirection === "up"
       ? "li-stat-trend li-stat-trend-up"
@@ -30,15 +15,8 @@ export default function DashboardAnalyticsCard({
         : "li-stat-trend li-stat-trend-neutral";
 
   return (
-    <div className="li-card li-hover-lift">
-      <div className="li-flex li-justify-between li-items-center li-mb-md">
-        <p className="li-text-sm li-text-secondary">{tag}</p>
-        {Icon && (
-          <div className={`li-card-icon-box ${iconBoxClass}`}>
-            <Icon size={18} />
-          </div>
-        )}
-      </div>
+    <div className="li-card">
+      <p className="li-text-sm li-text-secondary li-mb-md">{tag}</p>
 
       <h1 className="li-h1 li-mb-sm">{data}</h1>
 

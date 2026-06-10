@@ -5,17 +5,17 @@ import type {
   TimePeriod,
 } from "../models/DashboardModels.ts";
 import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
-import EmptyHistoryState from "./EmptyHistoryState.tsx";
 import { truncate } from "../utils/truncate.ts";
+import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
 
-export default function DashboardHistoryCard({
+export default function DashboardRecentsCard({
   record,
 }: DashboardHistoryCardProps): React.JSX.Element {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("weekly");
 
   return (
     <section className="li-section-sm">
-      <div className="li-card li-hover-lift">
+      <div className="li-card">
         <div className="li-flex li-justify-between li-items-center li-mb-md">
           <div>
             <h3 style={{ marginBottom: 2 }}>Recent Findings</h3>
@@ -37,7 +37,7 @@ export default function DashboardHistoryCard({
         </div>
 
         {record.length === 0 ? (
-          <EmptyHistoryState />
+          <EmptyDataState />
         ) : (
           <div className="li-table-container">
             <table className="li-table">

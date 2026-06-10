@@ -14,6 +14,7 @@ import type {
 } from "../models/DashboardModels.ts";
 import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
 import PipelineTooltip from "./PipelineTooltip.tsx";
+import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
 
 const ANGLE_STYLE = {
   fontSize: 11,
@@ -26,8 +27,24 @@ export default function DashboardHexChart({
 }: DashboardHexChartProps): React.JSX.Element {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("6months");
 
+  if (!pipelineData?.length) {
+    return (
+      <div className="li-card">
+        <div className="li-flex li-justify-between li-items-center li-mb-md">
+          <div>
+            <h3 style={{ marginBottom: 2 }}>Pipeline Activity</h3>
+            <p className="li-text-xs li-text-muted">
+              Run frequency by pipeline type
+            </p>
+          </div>
+        </div>
+        <EmptyDataState />
+      </div>
+    );
+  }
+
   return (
-    <div className="li-card li-hover-lift">
+    <div className="li-card">
       <div className="li-flex li-justify-between li-items-center li-mb-md">
         <div>
           <h3 style={{ marginBottom: 2 }}>Pipeline Activity</h3>
