@@ -78,6 +78,7 @@
     --li-space-8: 32px; /* Adding a step for 32px as it's common */
     --li-space-12: var(--li-space-xl);
     --li-space-16: 64px; /* Adding a step for 64px */
+    --li-space-18: 72px;
 
     /* --- Borders & Radius --- */
     --li-radius-sm: 4px;

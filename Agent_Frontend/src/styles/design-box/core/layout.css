@@ -125,6 +125,10 @@
     gap: var(--li-space-16);
 }
 
+.li-gap-xxl {
+    gap: var(--li-space-18);
+}
+
 /* --- Flex Primitives --- */
 
 .li-flex {
@@ -144,6 +148,11 @@
 .li-flex-xl {
     display: flex;
     gap: var(--li-space-16);
+}
+
+.li-flex-xxl {
+    display: flex;
+    gap: var(--li-space-18);
 }
 
 .li-flex2 {
