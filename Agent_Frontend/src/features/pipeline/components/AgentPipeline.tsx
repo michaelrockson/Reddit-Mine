@@ -59,6 +59,11 @@ export default function AgentPipeline(): React.JSX.Element {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         fitView
+        nodesDraggable={false}
+        panOnDrag={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
         connectionLineType={ConnectionLineType.Straight}
         defaultEdgeOptions={{
           style: { stroke: "#808080", strokeWidth: 4 },

@@ -47,9 +47,48 @@ const initialEdges: PipelineEdge[] = [
   { id: "e4-5", source: "4", target: "5" },
 ];
 
+const mockPipelineRunHistory = [
+  {
+    id: 1,
+    pipeline: "Scout Pipeline",
+    status: "Success",
+    duration: "2m 34s",
+    records: 127,
+  },
+  {
+    id: 2,
+    pipeline: "Ingress Pipeline",
+    status: "Success",
+    duration: "1m 15s",
+    records: 42,
+  },
+  {
+    id: 3,
+    pipeline: "Sentiment Pipeline",
+    status: "Failed",
+    duration: "45s",
+    records: 0,
+  },
+  {
+    id: 4,
+    pipeline: "Core Pipeline",
+    status: "Success",
+    duration: "3m 12s",
+    records: 318,
+  },
+  {
+    id: 5,
+    pipeline: "Egress Pipeline",
+    status: "Running",
+    duration: "1m 8s",
+    records: 89,
+  },
+];
+
 export function usePipeline() {
   const [nodes, setNodes] = useState<PipelineNode[]>(initialNodes);
   const [edges, setEdges] = useState<PipelineEdge[]>(initialEdges);
+  const [runHistory] = useState(mockPipelineRunHistory);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<PipelineNode>[]) =>
@@ -63,5 +102,5 @@ export function usePipeline() {
     [],
   );
 
-  return { nodes, edges, onNodesChange, onEdgesChange };
+  return { nodes, edges, onNodesChange, onEdgesChange, runHistory };
 }
