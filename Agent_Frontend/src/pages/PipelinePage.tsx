@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  AgentPipeline,
+  PipelineBoard,
   PipelineHeader,
   PipelineStats,
 } from "../features/pipeline/index..ts";
@@ -11,7 +11,7 @@ export default function PipelinePage(): React.JSX.Element {
     <section className="li-section-sm li-px-lg li-flex li-flex-col li-gap-lg li-h-full">
       <PipelineHeader />
       <PipelineStats />
-      <AgentPipeline />
+      <PipelineBoard />
       <PipelineRunHistory />
     </section>
   );
