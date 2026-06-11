@@ -10,8 +10,7 @@ export default function PipelineRunHistory(): React.JSX.Element {
       <div className="li-card">
         <div className="li-flex li-justify-between li-items-center li-mb-md">
           <div>
-            <h3 style={{ marginBottom: 2 }}>Pipeline Run History</h3>
-            <p className="li-text-xs li-text-muted">Latest pipeline runs</p>
+            <h3 style={{ marginBottom: 2 }}>Recent Runs</h3>
           </div>
           <div className="li-flex li-items-center">
             <a
@@ -32,10 +31,10 @@ export default function PipelineRunHistory(): React.JSX.Element {
             <table className="li-table">
               <thead>
                 <tr>
-                  <th>Pipeline</th>
-                  <th>Status</th>
+                  <th>Run ID</th>
+                  <th>Triggered</th>
                   <th>Duration</th>
-                  <th>Records</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -51,6 +50,8 @@ export default function PipelineRunHistory(): React.JSX.Element {
                     >
                       {row.pipeline}
                     </td>
+                    <td>{row.triggered?.toLocaleString() ?? "—"}</td>
+                    <td>{row.duration}</td>
                     <td>
                       {row.status ? (
                         <span className="li-badge-subreddit">{row.status}</span>
@@ -58,8 +59,6 @@ export default function PipelineRunHistory(): React.JSX.Element {
                         <span className="li-text-muted li-text-xs">—</span>
                       )}
                     </td>
-                    <td>{row.duration}</td>
-                    <td>{row.records?.toLocaleString() ?? "—"}</td>
                   </tr>
                 ))}
               </tbody>

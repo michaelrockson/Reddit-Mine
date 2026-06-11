@@ -34,7 +34,7 @@ export default function PipelineNode({
         </div>
 
         <button className="li-btn li-btn-secondary li-w-full li-mt-lg li-btn-lg">
-          Run Pipeline
+          Run Stage
         </button>
       </div>
 

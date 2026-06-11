@@ -1,6 +1,19 @@
 import type { Edge, Node } from "@xyflow/react";
 
-export type PipelineNode = Node<{ label: string }>;
+export type PipelineStageStatus = "idle" | "running" | "success" | "failed" | "skipped";
+
+export type PipelineNodeData = {
+  label: string;
+  description?: string;
+  status: PipelineStageStatus;
+  step: number;
+  startTime?: string;
+  processTime?: string;
+  totalRunTime?: string;
+  outputCount?: number;
+};
+
+export type PipelineNode = Node<PipelineNodeData>;
 export type PipelineEdge = Edge;
 
 export type PipelineRecord = {
