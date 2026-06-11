@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getGreeting } from "../utils/getGreeting.tsx";
 
-export function useDashboardGreeting() {
+export function useGreeting() {
   const { message, icon } = getGreeting();
 
   const [greetingMessage] = useState(message);

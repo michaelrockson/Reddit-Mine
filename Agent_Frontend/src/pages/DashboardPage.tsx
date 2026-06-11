@@ -2,7 +2,6 @@ import React from "react";
 import LoadingScreen from "../components/ui/LoadingScreen.tsx";
 import ErrorScreen from "../components/ui/ErrorScreen.tsx";
 import {
-  DashboardGreeting,
   DashboardHistoryCard,
   DashboardOverviewCards,
   DashboardOverviewCharts,
@@ -12,6 +11,7 @@ import {
   useDashboardOverviewCards,
   useDashboardPage,
 } from "../features/dashboard/index.ts";
+import UserGreeting from "../components/ui/UserGreeting.tsx";
 
 export default function DashboardPage(): React.JSX.Element {
   const { payload, loading, error } = useDashboardPage();
@@ -33,7 +33,7 @@ export default function DashboardPage(): React.JSX.Element {
   return (
     <>
       <section className="li-section-sm li-px-lg li-animate-fade-in">
-        <DashboardGreeting username="Michael Rockson" />
+        <UserGreeting username={"Michael Rockson"} />
 
         <DashboardOverviewCards cardData={cardData} />
         <DashboardOverviewCharts

@@ -1,0 +1,72 @@
+import React from "react";
+import { MdArrowForward } from "react-icons/md";
+import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
+import { usePipeline } from "../hooks/usePipeline.tsx";
+
+export default function PipelineRunHistory(): React.JSX.Element {
+  const { runHistory } = usePipeline();
+  return (
+    <section className="li-section-sm">
+      <div className="li-card">
+        <div className="li-flex li-justify-between li-items-center li-mb-md">
+          <div>
+            <h3 style={{ marginBottom: 2 }}>Pipeline Run History</h3>
+            <p className="li-text-xs li-text-muted">Latest pipeline runs</p>
+          </div>
+          <div className="li-flex li-items-center">
+            <a
+              href="#"
+              className="li-flex li-items-center li-text-sm li-text-secondary"
+              style={{ gap: 4, transition: "color 0.2s" }}
+              id="history-view-all"
+            >
+              View all <MdArrowForward size={14} />
+            </a>
+          </div>
+        </div>
+
+        {runHistory.length === 0 ? (
+          <EmptyDataState />
+        ) : (
+          <div className="li-table-container">
+            <table className="li-table">
+              <thead>
+                <tr>
+                  <th>Pipeline</th>
+                  <th>Status</th>
+                  <th>Duration</th>
+                  <th>Records</th>
+                </tr>
+              </thead>
+              <tbody>
+                {runHistory.map((row) => (
+                  <tr key={row.id}>
+                    <td
+                      style={{
+                        maxWidth: 200,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {row.pipeline}
+                    </td>
+                    <td>
+                      {row.status ? (
+                        <span className="li-badge-subreddit">{row.status}</span>
+                      ) : (
+                        <span className="li-text-muted li-text-xs">—</span>
+                      )}
+                    </td>
+                    <td>{row.duration}</td>
+                    <td>{row.records?.toLocaleString() ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

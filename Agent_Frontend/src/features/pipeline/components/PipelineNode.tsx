@@ -1,6 +1,6 @@
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { PipelineNode } from "../models/PipelineModels.ts";
-import { Md3dRotation } from "react-icons/md";
+import { MdCheckCircle } from "react-icons/md";
 
 export default function PipelineNode({
   data,
@@ -12,20 +12,30 @@ export default function PipelineNode({
 
       <div className="node-content li-card-mute">
         <div className="li-flex li-justify-between">
-          <div>
-            <h3 className="li-job-card-header">{data.label}</h3>
-            <p className="li-text-secondary">Sub-text</p>
+          <div className="li-flex">
+            <MdCheckCircle size={32} className="li-stat-trend-up" />
+            <h3 className="li-h3">{data.label}</h3>
           </div>
-          <Md3dRotation style={{ width: 28, height: 28 }} />
         </div>
 
-        <div className="li-border-b li-mt-md"></div>
-        <div className="li-mt-md li-px-sm li-py-sm">
-          <ul>
-            <li>Agent Pipeline</li>
-            <li>Duration: 3m 2s</li>
-          </ul>
+        <div className="li-flex-col">
+          <div className="li-flex-xxl li-justify-between li-mt-md li-px-sm li-py-sm">
+            <p className="li-text-muted li-text-lg">Start time</p>
+            <p className="li-text-muted li-text-lg">3m 15s</p>
+          </div>
+          <div className="li-flex-xxl li-justify-between li-mt-md li-px-sm li-py-sm">
+            <p className="li-text-muted li-text-lg">Process time</p>
+            <p className="li-text-muted li-text-lg">3m 15s</p>
+          </div>
+          <div className="li-flex-xxl li-justify-between li-mt-md li-px-sm li-py-sm">
+            <p className="li-text-muted li-text-lg">Total Run Time</p>
+            <p className="li-text-muted li-text-lg">3m 15s</p>
+          </div>
         </div>
+
+        <button className="li-btn li-btn-secondary li-w-full li-mt-lg li-btn-lg">
+          Run Pipeline
+        </button>
       </div>
 
       <Handle type="source" position={Position.Right} />
