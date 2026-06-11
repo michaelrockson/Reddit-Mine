@@ -10,7 +10,7 @@ const nodeTypes = {
   custom: PipelineNode,
 };
 
-export default function ScoutPipeline(): React.JSX.Element {
+export default function AgentPipeline(): React.JSX.Element {
   const { nodes, edges, onNodesChange, onEdgesChange } = usePipeline();
 
   return (
