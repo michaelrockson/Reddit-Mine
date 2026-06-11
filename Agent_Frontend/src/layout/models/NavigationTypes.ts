@@ -1,7 +1,8 @@
-import type { IconType } from "react-icons";
+import React from "react";
 
 export type SideBarNavItems = {
   id: number;
-  icon?: IconType;
   navLabel: string;
+  path: string;
+  icon?: React.ComponentType;
 };

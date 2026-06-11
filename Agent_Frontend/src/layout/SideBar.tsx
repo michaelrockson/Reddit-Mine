@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import { useSideBar } from "./hooks/useSideBar.tsx";
 
 export default function SideBar() {
@@ -17,10 +18,16 @@ export default function SideBar() {
         <ul className="li-flex-lg li-flex-col li-sidebar-item">
           {sideBarNavs.map((nav) => (
             <li key={nav.id}>
-              <a href="">
+              <NavLink
+                to={nav.path}
+                end={nav.path === "/dashboard"}
+                className={({ isActive }) =>
+                  isActive ? "li-nav-link li-nav-link--active" : "li-nav-link"
+                }
+              >
                 {nav.icon && <nav.icon />}
                 {nav.navLabel}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -28,7 +35,7 @@ export default function SideBar() {
 
       <footer className="li-sidebar-footer li-flex">
         <div className="li-sidebar-user">
-          <div className=" li-avatar li-sidear-user-avatar">MR</div>
+          <div className="li-avatar li-sidear-user-avatar">MR</div>
           <div className="li-flex-no-gap li-flex-col">
             <p className="li-sidebar-user-name">Michael Rockson</p>
             <span className="li-sidebar-user-role">example@gmail.com</span>

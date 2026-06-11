@@ -7,6 +7,7 @@
 @import url('core/base.css');
 @import url('core/layout.css');
 @import url('core/responsive.css');
+@import url('@xyflow/react/dist/style.css');
 
 /* UI */
 @import url('ui/effects.css');

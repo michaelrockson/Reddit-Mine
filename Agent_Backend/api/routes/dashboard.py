@@ -16,7 +16,7 @@ def get_analytics_info():
                 tag = "Agent Health",
                 data = 92,
                 trend = 4.2,
-                trendDirection = "up",
+                trendDirection = "up",  
             ),
             AnalyticsCardsStruct(
                 id = 1,
