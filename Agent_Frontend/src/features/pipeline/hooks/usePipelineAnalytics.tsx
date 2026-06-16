@@ -4,23 +4,24 @@ import type { PipelineAnalyticsPayload } from "../models/PipelineModels.ts";
 const analyticsData: PipelineAnalyticsPayload[] = [
   {
     id: 0,
-    tag: "Last Run",
+    tag: "Last Agentic Run",
     data: "3d ago",
   },
+
   {
     id: 1,
+    tag: "Last Manual Trigger",
+    data: "12w ago",
+  },
+  {
+    id: 2,
     tag: "Run-Duration",
     data: "12m 52s",
   },
   {
-    id: 2,
+    id: 3,
     tag: "Status",
     data: "Success",
-  },
-  {
-    id: 3,
-    tag: "Outputs",
-    data: "123",
   },
 ];
 
