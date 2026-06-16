@@ -17,9 +17,28 @@ export default function PipelineHeader(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <div>
+      <div className="li-flex-lg">
+        <div className="li-input-group">
+          <select
+            name="stages"
+            id="stages"
+            defaultValue=""
+            className="li-btn li-btn-secondary li-btn-lg li-select"
+          >
+            <option value="" disabled>
+              Select Pipeline
+            </option>
+            <option value="scout">Scout</option>
+            <option value="scrape">Scrape</option>
+            <option value="analyze">Analyze</option>
+            <option value="process">Process</option>
+            <option value="deliver">Deliver</option>
+            <option value="all">All Pipelines</option>
+          </select>
+        </div>
+
         <button className="li-btn li-btn-lg li-btn-secondary">
-          Run All Pipelines
+          Trigger Run
         </button>
       </div>
     </div>
