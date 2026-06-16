@@ -12,9 +12,9 @@ import type {
   DashboardHexChartProps,
   TimePeriod,
 } from "../models/DashboardModels.ts";
-import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
 import PipelineTooltip from "./PipelineTooltip.tsx";
 import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
+import TimeFilter from "../../../components/ui/TimeFilter.tsx";
 
 const ANGLE_STYLE = {
   fontSize: 11,
@@ -54,7 +54,7 @@ export default function DashboardHexChart({
         </div>
       </div>
 
-      <DashboardTimeFilter value={timePeriod} onChange={setTimePeriod} />
+      <TimeFilter value={timePeriod} onChange={setTimePeriod} />
 
       <ResponsiveContainer width="100%" height="100%" aspect={1}>
         <RadarChart

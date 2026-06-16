@@ -9,7 +9,7 @@ export default function SideBar() {
       <div className="li-flex-xl li-flex-col">
         <div className="li-sidebar-header">
           <img
-            src="/public/favicon.png"
+            src="/favicon.png"
             alt="System logo"
             style={{ width: 35, height: 35 }}
           />
