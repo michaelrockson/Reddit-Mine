@@ -1,8 +1,8 @@
 import {
   BrowserRouter as Router,
+  Navigate,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
 import React from "react";
 import LoginPage from "./pages/LoginPage.tsx";

@@ -4,9 +4,9 @@ import type {
   DashboardHistoryCardProps,
   TimePeriod,
 } from "../models/DashboardModels.ts";
-import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
 import { truncate } from "../utils/truncate.ts";
 import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
+import TimeFilter from "../../../components/ui/TimeFilter.tsx";
 
 export default function DashboardRecentsCard({
   record,
@@ -24,7 +24,7 @@ export default function DashboardRecentsCard({
             </p>
           </div>
           <div className="li-flex li-items-center">
-            <DashboardTimeFilter value={timePeriod} onChange={setTimePeriod} />
+            <TimeFilter value={timePeriod} onChange={setTimePeriod} />
             <a
               href="#"
               className="li-flex li-items-center li-text-sm li-text-secondary"

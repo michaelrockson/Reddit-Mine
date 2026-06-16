@@ -33,10 +33,6 @@ export interface DashboardData {
   agentPayload: AgentPayload[];
 }
 
-export interface GreetingProps {
-  username: string;
-}
-
 export type TimePeriod = "weekly" | "monthly" | "3months" | "6months";
 
 export interface DashboardHexChartProps {
@@ -69,9 +65,4 @@ export interface DashboardOverviewCardsProps {
 export interface DashboardOverviewChartsProps {
   agentData: AgentPayload[];
   pipelineData: PipelinePayload[];
-}
-
-export interface DashboardTimeFilterProps {
-  value: TimePeriod;
-  onChange: (val: TimePeriod) => void;
 }
