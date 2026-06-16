@@ -1,18 +1,20 @@
 import React from "react";
-import { usePipeline } from "../hooks/usePipeline.tsx";
+import { usePipelineBoard } from "../hooks/usePipelineBoard.tsx";
 import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react";
 import PipelineNode from "./PipelineNode.tsx";
+import { PipelineHeader } from "../index..ts";
 
 const nodeTypes = {
   custom: PipelineNode,
 };
 
 export default function PipelineBoard(): React.JSX.Element {
-  const { nodes, edges, onNodesChange, onEdgesChange } = usePipeline();
+  const { nodes, edges, onNodesChange, onEdgesChange } = usePipelineBoard();
 
   return (
     <div className="li-pipeline-workspace li-flex-col li-card">
-      <h3 className="li-h3 li-mb-lg">Pipeline Flow</h3>
+      <PipelineHeader />
+
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -28,11 +30,11 @@ export default function PipelineBoard(): React.JSX.Element {
         connectionLineType={ConnectionLineType.Straight}
         defaultEdgeOptions={{
           style: { stroke: "#808080", strokeWidth: 4 },
-          type: "smoothstep",
+          type: "",
           animated: true,
         }}
         style={{ width: "100%", height: 360, minHeight: 360 }}
-        className="li-text-secondary li-card"
+        className="li-card"
       >
         <Background />
       </ReactFlow>
