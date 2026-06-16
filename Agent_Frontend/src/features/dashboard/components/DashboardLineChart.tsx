@@ -12,9 +12,9 @@ import type {
   DashboardLineChartProps,
   TimePeriod,
 } from "../models/DashboardModels.ts";
-import DashboardTimeFilter from "./DashboardTimeFilter.tsx";
 import AgentActivityTooltip from "./AgentActivityTooltip.tsx";
 import EmptyDataState from "../../../components/ui/EmptyDataState.tsx";
+import TimeFilter from "../../../components/ui/TimeFilter.tsx";
 
 const AXIS_STYLE = {
   fontSize: 12,
@@ -48,7 +48,7 @@ export default function DashboardLineChart({
           <h3 style={{ marginBottom: 2 }}>Agent Activity</h3>
           <p className="li-text-xs li-text-muted">Run frequency over time</p>
         </div>
-        <DashboardTimeFilter value={timePeriod} onChange={setTimePeriod} />
+        <TimeFilter value={timePeriod} onChange={setTimePeriod} />
       </div>
 
       <ResponsiveContainer width="100%" aspect={2.2}>

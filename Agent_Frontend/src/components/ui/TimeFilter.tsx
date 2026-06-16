@@ -1,8 +1,5 @@
 import React from "react";
-import type {
-  DashboardTimeFilterProps,
-  TimePeriod,
-} from "../models/DashboardModels.ts";
+import type { TimeFilterProps, TimePeriod } from "./models/UiModels.ts";
 
 const OPTIONS: { label: string; value: TimePeriod }[] = [
   { label: "7 Days", value: "weekly" },
@@ -11,10 +8,10 @@ const OPTIONS: { label: string; value: TimePeriod }[] = [
   { label: "6 Months", value: "6months" },
 ];
 
-export default function DashboardTimeFilter({
+export default function TimeFilter({
   value,
   onChange,
-}: DashboardTimeFilterProps): React.JSX.Element {
+}: TimeFilterProps): React.JSX.Element {
   return (
     <div
       className="li-flex li-flex-no-gap"
