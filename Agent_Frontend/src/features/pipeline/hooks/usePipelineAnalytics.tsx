@@ -5,7 +5,7 @@ const analyticsData: PipelineAnalyticsPayload[] = [
   {
     id: 0,
     tag: "Last Run",
-    data: "3 days ago",
+    data: "3d ago",
   },
   {
     id: 1,
