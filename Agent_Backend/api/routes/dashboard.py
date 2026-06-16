@@ -16,7 +16,7 @@ def get_analytics_info():
                 tag = "Agent Health",
                 data = 92,
                 trend = 4.2,
-                trendDirection = "up",  
+                trendDirection = "up",
             ),
             AnalyticsCardsStruct(
                 id = 1,
@@ -95,6 +95,22 @@ def get_recent_findings():
                                content = "New Rust package for something interesting",
                                data = "01-06-2026",
                                subreddit = "r/softwaredevs"),
+            AgentRecordsStruct(id = 4, title = "Database Connection Timeout",
+                               content = "Application unable to connect to PostgreSQL cluster",
+                               data = "05-06-2026",
+                               subreddit = "r/devops"),
+            AgentRecordsStruct(id = 5, title = "Payment Gateway Failure",
+                               content = "Stripe transactions failing for EU customers",
+                               data = "05-06-2026",
+                               subreddit = "r/SaaS"),
+            AgentRecordsStruct(id = 6, title = "Deployment Rollback Triggered",
+                               content = "Production deployment automatically rolled back",
+                               data = "06-06-2026",
+                               subreddit = "r/webdev"),
+            AgentRecordsStruct(id = 7, title = "Unexpected Memory Spike",
+                               content = "Server memory usage increased by 300% within 15 minutes",
+                               data = "06-06-2026",
+                               subreddit = "r/programming"),
         ]
         return {"AgentRecordsPayload": payload, "status_code": 200}
     except Exception as e:
