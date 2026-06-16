@@ -15,7 +15,12 @@ const analyticsData: PipelineAnalyticsPayload[] = [
   {
     id: 2,
     tag: "Status",
-    data: "Succeeded",
+    data: "Success",
+  },
+  {
+    id: 3,
+    tag: "Outputs",
+    data: "123",
   },
 ];
 

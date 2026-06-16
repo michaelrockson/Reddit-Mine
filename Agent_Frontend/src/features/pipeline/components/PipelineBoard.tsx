@@ -2,6 +2,7 @@ import React from "react";
 import { usePipelineBoard } from "../hooks/usePipelineBoard.tsx";
 import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react";
 import PipelineNode from "./PipelineNode.tsx";
+import { PipelineHeader } from "../index..ts";
 
 const nodeTypes = {
   custom: PipelineNode,
@@ -12,11 +13,7 @@ export default function PipelineBoard(): React.JSX.Element {
 
   return (
     <div className="li-pipeline-workspace li-flex-col li-card">
-      <div className="li-flex li-justify-between li-items-center li-mb-md">
-        <div>
-          <h3 style={{ marginBottom: 2 }}>Pipeline Flow</h3>
-        </div>
-      </div>
+      <PipelineHeader />
 
       <ReactFlow
         nodes={nodes}
