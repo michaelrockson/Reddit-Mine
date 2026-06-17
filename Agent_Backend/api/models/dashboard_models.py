@@ -1,4 +1,5 @@
 from typing import Literal, Optional
+
 from pydantic import BaseModel
 
 
@@ -8,7 +9,8 @@ class AnalyticsCardsStruct(BaseModel):
     data: int | str
     trend: Optional[float] = None
     trendDirection: Optional[Literal["up", "down", "neutral"]] = None
-    variant: Optional[Literal["info", "success", "warning", "error", "brand"]] = "brand"
+    variant: Optional[
+        Literal["info", "success", "warning", "error", "brand"]] = "brand"
 
 
 class PipelineDataStruct(BaseModel):

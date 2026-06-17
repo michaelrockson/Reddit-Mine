@@ -14,4 +14,5 @@
 @import url("./empty-state.css");
 @import url("./skeleton.css");
 @import url("./pipeline.css");
-@import url("./JobCardNode.css");
+@import url("jobcardnode.css");
+@import url("subredditSettings.css");
