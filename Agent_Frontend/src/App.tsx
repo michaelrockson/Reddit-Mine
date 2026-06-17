@@ -11,6 +11,7 @@ import DashboardPage from "./pages/DashboardPage.tsx";
 import PipelinePage from "./pages/PipelinePage.tsx";
 import "./App.css";
 import ReportsPage from "./pages/ReportsPage.tsx";
+import SettingsPage from "./pages/SettingsPage.tsx";
 
 export default function App(): React.JSX.Element {
   return (
@@ -22,7 +23,7 @@ export default function App(): React.JSX.Element {
           <Route index element={<DashboardPage />} />
           <Route path="pipeline" element={<PipelinePage />} />
           <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings" element={<div>Settings</div>} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
