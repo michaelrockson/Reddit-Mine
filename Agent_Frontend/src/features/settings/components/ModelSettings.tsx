@@ -54,7 +54,7 @@ function InstructionsEditor({
           <div className="li-flex li-items-center li-gap-sm">
             <h3 className="li-text-primary">{label}</h3>
             {isEdited && (
-              <p className="li-badge li-badge-brand model-settings-edited-badge">
+              <p className="li-badge li-badge-warning model-settings-edited-badge">
                 edited
               </p>
             )}
@@ -100,9 +100,10 @@ export default function ModelSettings() {
     <div>
       <div className="li-mx-auto">
         <div className="li-card">
-          <h3 style={{ marginBottom: 2 }}>Agent Model Settings</h3>
+          <h3 style={{ marginBottom: 2 }}>Model Settings</h3>
           <p className="li-text-sm li-mt-sm li-text-muted">
-            Controls how the LangGraph agent classifies and scores pain points.
+            Controls how the Reddit-Mine agent classifies and scores pain
+            points.
           </p>
 
           <Divider />
@@ -130,7 +131,7 @@ export default function ModelSettings() {
 
           <InstructionsEditor
             label="Scout instructions"
-            description="Guides how the Scout agent flags candidate pain points during the first pass."
+            description="Guides how the Scout agent filters candidate pain points during the first phase."
             defaultValue={SCOUT_DEFAULT_INSTRUCTIONS}
           />
 
@@ -138,7 +139,7 @@ export default function ModelSettings() {
 
           <InstructionsEditor
             label="Curator instructions"
-            description="Guides how the Curator agent scores, clusters, and ranks flagged pain points."
+            description="Guides how the Curator agent processes pain points."
             defaultValue={CURATOR_DEFAULT_INSTRUCTIONS}
           />
         </div>
