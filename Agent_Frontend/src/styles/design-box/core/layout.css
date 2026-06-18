@@ -168,6 +168,16 @@
     flex-direction: column;
 }
 
+.li-flex-col-md {
+    flex-direction: column;
+    gap: var(--li-space-12);
+}
+
+.li-flex-col-lg {
+    flex-direction: column;
+    gap: var(--li-space-16);
+}
+
 .li-flex-1 {
     flex: 1;
 }
@@ -190,6 +200,10 @@
 
 .li-justify-center {
     justify-content: center;
+}
+
+.li-justify-end {
+    justify-content: end;
 }
 
 /* --- Spacing Utilities --- */

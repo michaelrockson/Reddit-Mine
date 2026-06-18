@@ -15,8 +15,8 @@
 }
 
 .li-badge-brand {
-    background: rgba(94, 106, 210, 0.1);
-    border-color: rgba(94, 106, 210, 0.2);
+    background: rgb(192 186 184 / 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
     color: var(--li-brand-light);
 }
 

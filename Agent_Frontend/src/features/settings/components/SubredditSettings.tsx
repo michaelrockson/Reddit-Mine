@@ -17,7 +17,7 @@ export default function SubredditSettings() {
     <div className="subreddit-settings-page">
       <div className="subreddit-settings-card">
         <div className="subreddit-settings-header">
-          <h2 className="subreddit-settings-title">Reddit sources</h2>
+          <h2 className="subreddit-settings-title">Reddit Sources</h2>
           <p className="subreddit-settings-subtitle">
             {activeCount} of {subreddits.length} active subreddits
           </p>
